@@ -1,3 +1,19 @@
 spring:
   application:
     name: nevera
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    # Supabase 대시보드의 URI 정보를 분해해서 입력합니다.
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 개발 환경에서만 사용, 운영에선 none 또는 validate
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
