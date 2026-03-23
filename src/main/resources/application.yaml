@@ -12,7 +12,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update # 개발 환경에서만 사용, 운영에선 none 또는 validate
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     properties:
       hibernate:
         format_sql: true
