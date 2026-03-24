@@ -1,12 +1,12 @@
 package com.example.nevera.service;
 
-import com.example.nevera.common.exception.BusinessException;
-import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.entity.TestEntity;
 import com.example.nevera.repository.TestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,8 +15,7 @@ public class TestService {
 
     private final TestRepository testRepository;
 
-    public TestEntity findMemberById() {
-        return testRepository.findById(1L)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public List<TestEntity> findAllPosts() {
+        return testRepository.findAll();
     }
 }
