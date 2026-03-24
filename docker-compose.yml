@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  nevera-backend:
+    image: psbted/nevera-backend:latest
+    container_name: nevera-backend
+    env_file: /home/azureuser/.env
+    expose:
+      - "8080"
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
