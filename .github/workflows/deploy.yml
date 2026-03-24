@@ -45,5 +45,5 @@ jobs:
             mkdir -p ~/nevera
             cd ~/nevera
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/nevera-backend:latest
-            sudo -E docker compose up -d --remove-orphans nevera-backend
+            sudo -E docker compose up -d --remove-orphans
             sudo docker image prune -f
