@@ -14,6 +14,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(errorCode.getStatus()) //  409, 400 등 상태코드 설정
-                .body(ApiResponse.error(errorCode.getStatus(), e.getMessage())); //  JSON 바디
+                .body(ApiResponse.error(errorCode.getStatus(), errorCode.getMessage())); //  JSON 바디
     }
 }
