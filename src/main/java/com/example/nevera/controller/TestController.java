@@ -20,8 +20,8 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping("/dbtest")
-    public List<TestEntity> getAllPosts() {
-        return testService.findAllPosts();
+    public TestEntity getAllPosts() {
+        return testService.findMemberById();
     }
 
     @GetMapping("/success")
