@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class MemberEntity {
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,9 @@ public class MemberEntity {
 
     private String password;
 
-    private String status;
+    @Column
+    @Builder.Default
+    private String status = "ACTIVE";
 
     private String provider;
 
