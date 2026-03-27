@@ -26,6 +26,7 @@ public class EmailAuth {
     @Column(name = "expiration_time", nullable = false)
     private LocalDateTime expirationTime;
 
+    @Builder.Default
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified = false;
 

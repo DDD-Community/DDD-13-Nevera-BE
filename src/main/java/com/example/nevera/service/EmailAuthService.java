@@ -30,6 +30,13 @@ public class EmailAuthService {
     @Transactional
     public void sendAuthCode(String email) {
         // 1. 중복 가입 확인
+
+        // 1. Swagger에서 도대체 어떤 글자를 보냈는지 확인
+        System.out.println("====== 검증할 이메일: [" + email + "] ======");
+
+        // 2. 이메일 존재 여부 쿼리 결과 확인
+        boolean isExist = memberRepository.existsByEmail(email);
+        System.out.println("====== DB 조회 결과: " + isExist + " ======");
         if (memberRepository.existsByEmail(email)) {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
@@ -76,6 +83,7 @@ public class EmailAuthService {
                 " </div>";
 
         helper.setText(htmlContent, true);
+        helper.setFrom("tjtpfks@gmail.com");
         mailSender.send(message);
     }
 

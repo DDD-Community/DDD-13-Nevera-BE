@@ -29,3 +29,14 @@ spring:
           auth: true
           starttls:
             enable: true
+
+springdoc:
+  # 컨트롤러 패키지만 콕 집어서 스캔!
+  packages-to-scan: com.example.nevera.controller
+  swagger-ui:
+    path: /swagger-ui.html
+    # 일단 false로 바꾸거나 이 줄을 지워보세요
+    disable-swagger-default-url: false
+    display-request-duration: true
+  api-docs:
+    path: /v3/api-docs
