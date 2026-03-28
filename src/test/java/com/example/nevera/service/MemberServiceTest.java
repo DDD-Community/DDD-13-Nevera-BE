@@ -2,6 +2,7 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 
+import com.example.nevera.dto.LoginRequest;
 import com.example.nevera.dto.SignupRequest;
 import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import org.junit.jupiter.api.DisplayName;
@@ -104,5 +106,26 @@ class MemberServiceTest {
 
         // 2. 가입 끝났으니 쓰임을 다한 인증 데이터는 1번 삭제(delete)되었는가?
         verify(emailAuthRepository, times(1)).delete(verifiedAuth);
+    }
+
+    @Test
+    @DisplayName("로그인 성공 테스트 - 비밀번호가 일치하면 토큰을 반환한다")
+    void login_success() {
+        // given (준비)
+        LoginRequest request = new LoginRequest("test@test.com", "rawPassword");
+        Member member = Member.builder()
+                .email("test@test.com")
+                .password("encodedPassword")
+                .build();
+
+        // 가짜 동작 정의 (Mocking)
+        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(member));
+        given(passwordEncoder.matches("rawPassword", "encodedPassword")).willReturn(true);
+
+        // when (실행)
+        String result = memberService.login(request);
+
+        // then (검증)
+        assertThat(result).isEqualTo("임시_토큰_나중에_교체예정");
     }
 }

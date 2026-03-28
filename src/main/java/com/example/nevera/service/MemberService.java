@@ -2,6 +2,7 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
+import com.example.nevera.dto.LoginRequest;
 import com.example.nevera.dto.SignupRequest;
 import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
@@ -44,5 +45,22 @@ public class MemberService {
 
         // 3. 인증 데이터 삭제 (가입 성공 후 정리)
         emailAuthRepository.delete(auth);
+    }
+
+    @Transactional(readOnly = true)
+    public String login(LoginRequest request) {
+        // 1. 이메일 존재 확인
+        Member member = memberRepository.findByEmail(request.email())
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 2. 비밀번호 일치 확인
+        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        // 3. jwt 코드
+        // return jwtProvider.createToken(member.getEmail(), member.getRole());
+
+        return "임시_토큰_나중에_교체예정";
     }
 }

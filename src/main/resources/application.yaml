@@ -40,3 +40,6 @@ springdoc:
     display-request-duration: true
   api-docs:
     path: /v3/api-docs
+
+server:
+  port: 8082  # 8080 대신 8081로 변경
