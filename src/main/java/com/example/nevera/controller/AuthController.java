@@ -6,19 +6,21 @@ import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.dto.auth.GoogleLoginRequest;
 import com.example.nevera.dto.auth.TokenRefreshRequest;
 import com.example.nevera.service.AuthService;
+import com.example.nevera.service.googleAuth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+    private final GoogleAuthService googleAuthService;
 
     @PostMapping("/google")
     public AuthTokenResponse googleLogin(@RequestBody GoogleLoginRequest request) {
-        return authService.googleLogin(request.idToken(), request.deviceId());
+        return googleAuthService.googleLogin(request.idToken(), request.deviceId());
     }
 
     @PostMapping("/refresh")
@@ -32,7 +34,6 @@ public class AuthController {
 
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
         if (body != null && body.refreshToken() != null) return body.refreshToken();
-        if (authHeader != null && authHeader.startsWith("Bearer ")) return authHeader.substring(7);
         throw new BusinessException(ErrorCode.INVALID_TOKEN);
     }
 }
