@@ -6,11 +6,15 @@ public enum ErrorCode {
     EXPIRED_AUTH_CODE(400, "인증 시간이 만료되었습니다."),
     UNVERIFIED_EMAIL(400, "이메일 인증이 완료되지 않았습니다."),
     INVALID_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
+
+    INVALID_GOOGLE_TOKEN(401, "유효하지 않은 Google 토큰입니다."),
+    INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
+    EXPIRED_TOKEN(401, "만료된 토큰입니다."),
+
     AUTH_NOT_FOUND(404, "인증 요청 내역이 없습니다."),
     MEMBER_NOT_FOUND(404, "존재하지 않는 사용자입니다."),
 
-    USER_NOT_FOUND(404, "해당 ID를 가진 유저를 찾을 수 없습니다."),
-
+    TOKEN_NOT_FOUND(404, "토큰을 찾을 수 없습니다."),
     DUPLICATE_EMAIL(409, "이미 사용 중인 이메일입니다."),
 
 
