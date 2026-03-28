@@ -17,3 +17,29 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: tjtpfks@gmail.com
+    password: andfmzgilxrsmhom
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+springdoc:
+  # 컨트롤러 패키지만 콕 집어서 스캔!
+  packages-to-scan: com.example.nevera.controller
+  swagger-ui:
+    path: /swagger-ui.html
+    # 일단 false로 바꾸거나 이 줄을 지워보세요
+    disable-swagger-default-url: false
+    display-request-duration: true
+  api-docs:
+    path: /v3/api-docs
+
+server:
+  port: 8082  # 8080 대신 8081로 변경
