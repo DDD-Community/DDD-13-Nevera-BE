@@ -1,10 +1,9 @@
 package com.example.nevera.controller;
 
-import com.example.nevera.dto.EmailVerifyRequest;
-import com.example.nevera.dto.LoginRequest;
-import com.example.nevera.dto.SignupRequest;
-import com.example.nevera.service.EmailAuthService;
-import com.example.nevera.service.MemberService;
+import com.example.nevera.dto.auth.EmailVerifyRequest;
+import com.example.nevera.dto.auth.LoginRequest;
+import com.example.nevera.dto.auth.SignupRequest;
+import com.example.nevera.service.auth.EmailAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,8 +15,8 @@ import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.dto.auth.GoogleLoginRequest;
 import com.example.nevera.dto.auth.LogoutRequest;
 import com.example.nevera.dto.auth.TokenRefreshRequest;
-import com.example.nevera.service.JwtAuthService;
-import com.example.nevera.service.googleAuth.GoogleAuthService;
+import com.example.nevera.service.auth.JwtAuthService;
+import com.example.nevera.service.auth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final EmailAuthService emailAuthService;
-    private final MemberService memberService;
     private final JwtAuthService authService;
     private final GoogleAuthService googleAuthService;
 
@@ -50,7 +48,7 @@ public class AuthController {
     @Operation(summary = "회원가입", description = "회원가입")
     @PostMapping("/signup")
     public String signup(@Valid @RequestBody SignupRequest request) {
-        memberService.signup(request);
+        authService.signup(request);
         return "회원가입이 완료되었습니다.";
     }
 
@@ -58,7 +56,7 @@ public class AuthController {
     @PostMapping("/login")
     public AuthTokenResponse emailLogin(@Valid @RequestBody LoginRequest request) {
 
-        return memberService.emailLogin(request);
+        return authService.emailLogin(request);
     }
 
     @Operation(summary = "구글 로그인 / 회원가입", description = "구글 로그인 / 회원가입")
@@ -81,8 +79,8 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "해당 기기의 refresh 토큰 삭제 (deviceId 기반)")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
-    public String logout(@AuthenticationPrincipal Long memberId, @RequestBody LogoutRequest body) {
-        authService.logout(memberId, body.deviceId());
+    public String logout(@AuthenticationPrincipal Long memberId, @RequestBody LogoutRequest request) {
+        authService.logout(memberId, request.deviceId());
         return "로그아웃이 완료되었습니다.";
     }
 
