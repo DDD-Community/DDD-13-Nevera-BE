@@ -4,6 +4,7 @@ import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.repository.EmailAuthRepository;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.service.auth.EmailAuthService;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 

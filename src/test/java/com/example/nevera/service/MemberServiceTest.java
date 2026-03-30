@@ -2,12 +2,13 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 
-import com.example.nevera.dto.LoginRequest;
-import com.example.nevera.dto.SignupRequest;
+import com.example.nevera.dto.auth.LoginRequest;
+import com.example.nevera.dto.auth.SignupRequest;
 import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
 import com.example.nevera.repository.EmailAuthRepository;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.service.auth.JwtAuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +20,6 @@ import static org.mockito.BDDMockito.given;
 
 import org.junit.jupiter.api.DisplayName;
 import org.mockito.Mock;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -42,7 +42,7 @@ class MemberServiceTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private MemberService memberService;
+    private JwtAuthService authService;
 
 
     @Test
@@ -57,7 +57,7 @@ class MemberServiceTest {
         given(emailAuthRepository.findByEmail(request.email())).willReturn(Optional.empty());
 
         // When & Then (실행 & 검증)
-        assertThatThrownBy(() -> memberService.signup(request))
+        assertThatThrownBy(() -> authService.signup(request))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -75,7 +75,7 @@ class MemberServiceTest {
         given(emailAuthRepository.findByEmail(request.email())).willReturn(Optional.of(unverifiedAuth));
 
         // When & Then (실행 & 검증)
-        assertThatThrownBy(() -> memberService.signup(request))
+        assertThatThrownBy(() -> authService.signup(request))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -98,7 +98,7 @@ class MemberServiceTest {
         given(passwordEncoder.encode(request.password())).willReturn(expectedEncodedPassword);
 
         // When (실행)
-        memberService.signup(request);
+        authService.signup(request);
 
         // Then (검증)
         // 1. 회원 정보가 DB에 1번 저장(save)되었는가?
@@ -123,7 +123,7 @@ class MemberServiceTest {
         given(passwordEncoder.matches("rawPassword", "encodedPassword")).willReturn(true);
 
         // when (실행)
-        String result = memberService.login(request);
+        String result = authService.login(request);
 
         // then (검증)
         assertThat(result).isEqualTo("임시_토큰_나중에_교체예정");

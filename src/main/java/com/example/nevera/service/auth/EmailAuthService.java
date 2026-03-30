@@ -1,4 +1,4 @@
-package com.example.nevera.service;
+package com.example.nevera.service.auth;
 
 
 import com.example.nevera.common.exception.BusinessException;
@@ -9,14 +9,11 @@ import com.example.nevera.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @Service

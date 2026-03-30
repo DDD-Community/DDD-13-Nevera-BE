@@ -1,10 +1,10 @@
-package com.example.nevera.service;
+package com.example.nevera.service.auth;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.common.jwt.JwtProvider;
-import com.example.nevera.dto.LoginRequest;
-import com.example.nevera.dto.SignupRequest;
+import com.example.nevera.dto.auth.LoginRequest;
+import com.example.nevera.dto.auth.SignupRequest;
 import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
@@ -19,13 +19,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+@Transactional
+public class JwtAuthService {
 
+    private final TokenRepository tokenRepository;
     private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
     private final EmailAuthRepository emailAuthRepository;
     private final BCryptPasswordEncoder passwordEncoder; // 암호화 도구
-    private final JwtProvider jwtProvider;
-    private final TokenRepository tokenRepository;
+
+    public AuthTokenResponse refresh(String refreshToken) {
+        jwtProvider.parseToken(refreshToken);
+
+        Token tokenEntity = tokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new BusinessException(ErrorCode.TOKEN_NOT_FOUND));
+
+        Member member = tokenEntity.getMember();
+
+        String newAccessToken = jwtProvider.generateAccessToken(member.getId(), member.getEmail(), member.getRole());
+        String newRefreshToken = jwtProvider.generateRefreshToken(member.getId());
+
+        tokenEntity.updateRefreshToken(newRefreshToken);
+
+        return new AuthTokenResponse(newAccessToken, newRefreshToken);
+    }
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -82,4 +99,18 @@ public class MemberService {
         // 5. AuthTokenResponse 객체 반환
         return new AuthTokenResponse(accessToken, refreshToken);
     }
+
+    public void logout(Long memberId, String deviceId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        tokenRepository.deleteByMemberAndDeviceId(member, deviceId);
+    }
+
+    public void deleteAccount(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        tokenRepository.deleteByMember(member);
+        memberRepository.delete(member);
+    }
+
 }

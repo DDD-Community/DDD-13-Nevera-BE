@@ -1,4 +1,4 @@
-package com.example.nevera.service.googleAuth;
+package com.example.nevera.service.auth;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;

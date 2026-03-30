@@ -1,4 +1,4 @@
-package com.example.nevera.dto;
+package com.example.nevera.dto.auth;
 
 public record EmailVerifyRequest(
         String email,
