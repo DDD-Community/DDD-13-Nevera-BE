@@ -44,7 +44,6 @@ public class JwtAuthService {
         return new AuthTokenResponse(newAccessToken, newRefreshToken);
     }
 
-    @Transactional
     public void signup(SignupRequest request) {
         // 1. EmailAuth 테이블에서 is_verified가 true인지 최종 체크 (프론트 조작 방지)
         EmailAuth auth = emailAuthRepository.findByEmail(request.email())
@@ -70,7 +69,6 @@ public class JwtAuthService {
         emailAuthRepository.delete(auth);
     }
 
-    @Transactional
     public AuthTokenResponse emailLogin(LoginRequest request) {
         // 1. 이메일 존재 확인
         Member member = memberRepository.findByEmail(request.email())
