@@ -2,12 +2,16 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
+import com.example.nevera.common.jwt.JwtProvider;
 import com.example.nevera.dto.LoginRequest;
 import com.example.nevera.dto.SignupRequest;
+import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
+import com.example.nevera.entity.Token;
 import com.example.nevera.repository.EmailAuthRepository;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final EmailAuthRepository emailAuthRepository;
     private final BCryptPasswordEncoder passwordEncoder; // 암호화 도구
+    private final JwtProvider jwtProvider;
+    private final TokenRepository tokenRepository;
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -47,8 +53,8 @@ public class MemberService {
         emailAuthRepository.delete(auth);
     }
 
-    @Transactional(readOnly = true)
-    public String login(LoginRequest request) {
+    @Transactional
+    public AuthTokenResponse emailLogin(LoginRequest request) {
         // 1. 이메일 존재 확인
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -59,8 +65,21 @@ public class MemberService {
         }
 
         // 3. jwt 코드
-        // return jwtProvider.createToken(member.getEmail(), member.getRole());
+        String accessToken = jwtProvider.generateAccessToken(member.getId(), member.getEmail(), member.getRole());
+        String refreshToken = jwtProvider.generateRefreshToken(member.getId());
 
-        return "임시_토큰_나중에_교체예정";
+        // 4. 리프레시 토큰 DB 저장 또는 업데이트 (다중 디바이스 대응)
+        Token token = tokenRepository.findByMemberAndDeviceId(member, request.deviceId())
+                .orElseGet(() -> Token.builder()
+                        .member(member)
+                        .deviceId(request.deviceId())
+                        .refreshToken(refreshToken)
+                        .build());
+
+        token.updateRefreshToken(refreshToken); // 새로운 RT로 갱신
+        tokenRepository.save(token);
+
+        // 5. AuthTokenResponse 객체 반환
+        return new AuthTokenResponse(accessToken, refreshToken);
     }
 }
