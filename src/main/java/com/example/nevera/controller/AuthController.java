@@ -56,9 +56,9 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
-    public String login(@Valid @RequestBody LoginRequest request) {
+    public AuthTokenResponse emailLogin(@Valid @RequestBody LoginRequest request) {
 
-        return memberService.login(request);
+        return memberService.emailLogin(request);
     }
 
     @Operation(summary = "구글 로그인 / 회원가입", description = "구글 로그인 / 회원가입")
