@@ -30,9 +30,10 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v1/auth/**", "/dbtest").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/dbtest").permitAll()
+                        .requestMatchers("/api/v1/auth/logout", "/api/v1/auth/withdraw").authenticated()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().permitAll()
-
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
