@@ -14,5 +14,4 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     void deleteByMemberAndDeviceId(Member member, String deviceId);
     void deleteByMember(Member member);
 
-    String deviceId(String deviceId);
 }
