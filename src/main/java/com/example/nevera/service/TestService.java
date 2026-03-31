@@ -17,6 +17,6 @@ public class TestService {
 
     public TestEntity findMemberById() {
         return testRepository.findById(1L)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }
