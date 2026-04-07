@@ -32,10 +32,4 @@ public class TestController {
         return data;
     }
 
-    @GetMapping("/error")
-    public void testError() {
-
-        throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
-        // 결과: HTTP 상태코드 409 + { "result": null, "error": { "code": 409, "message": "이미 사용 중인 이메일입니다." } }
-    }
 }
