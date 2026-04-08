@@ -43,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 List.of(new SimpleGrantedAuthority(role))
                         );
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (BusinessException ignored) {
-                // 유효하지 않은 토큰 / 만료된 토큰이면 무시하고 필요 시 Authorization 단계에서 처리
+            } catch (BusinessException e) {
+                request.setAttribute("jwtErrorCode", e.getErrorCode());
             }
         }
         filterChain.doFilter(request, response);

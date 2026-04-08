@@ -1,5 +1,6 @@
 package com.example.nevera.config;
 
+import com.example.nevera.common.jwt.JwtAuthenticationEntryPoint;
 import com.example.nevera.common.jwt.JwtAuthenticationFilter;
 import com.example.nevera.common.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,6 +36,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/logout", "/api/v1/auth/withdraw").authenticated()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
