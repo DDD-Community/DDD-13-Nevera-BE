@@ -1,13 +1,10 @@
 package com.example.nevera.service.auth;
 
 import com.example.nevera.common.enums.MemberRole;
-import com.example.nevera.common.jwt.JwtProvider;
 import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.dto.auth.GoogleUserInfo;
 import com.example.nevera.entity.Member;
-import com.example.nevera.entity.Token;
 import com.example.nevera.repository.MemberRepository;
-import com.example.nevera.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,26 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoogleAuthService {
 
     private final MemberRepository memberRepository;
-    private final TokenRepository tokenRepository;
-    private final JwtProvider jwtProvider;
     private final GoogleTokenVerifier googleTokenVerifier;
+    private final JwtTokenService jwtTokenService;
 
     public AuthTokenResponse googleLogin(String idToken) {
         GoogleUserInfo userInfo = googleTokenVerifier.verify(idToken);
         Member member = findOrCreateMember(userInfo);
-
-        String accessToken = jwtProvider.generateAccessToken(member.getId(), member.getEmail(), member.getRole());
-        String refreshToken = jwtProvider.generateRefreshToken(member.getId());
-
-        Token token = tokenRepository.findByMember(member)
-                .orElseGet(() -> Token.builder()
-                        .member(member)
-                        .refreshToken(refreshToken)
-                        .build());
-        token.updateRefreshToken(refreshToken);
-        tokenRepository.save(token);
-
-        return new AuthTokenResponse(accessToken, refreshToken);
+        return jwtTokenService.issueTokens(member);
     }
 
     private Member findOrCreateMember(GoogleUserInfo info) {

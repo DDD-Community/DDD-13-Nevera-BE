@@ -26,7 +26,8 @@ public class JwtAuthService {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final EmailAuthRepository emailAuthRepository;
-    private final BCryptPasswordEncoder passwordEncoder; // 암호화 도구
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtTokenService jwtTokenService;
 
     public AuthTokenResponse refresh(String refreshToken) {
         jwtProvider.parseToken(refreshToken);
@@ -79,22 +80,8 @@ public class JwtAuthService {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
 
-        // 3. jwt 코드
-        String accessToken = jwtProvider.generateAccessToken(member.getId(), member.getEmail(), member.getRole());
-        String refreshToken = jwtProvider.generateRefreshToken(member.getId());
-
-        // 4. 리프레시 토큰 DB 저장 또는 업데이트
-        Token token = tokenRepository.findByMember(member)
-                .orElseGet(() -> Token.builder()
-                        .member(member)
-                        .refreshToken(refreshToken)
-                        .build());
-
-        token.updateRefreshToken(refreshToken); // 새로운 RT로 갱신
-        tokenRepository.save(token);
-
-        // 5. AuthTokenResponse 객체 반환
-        return new AuthTokenResponse(accessToken, refreshToken);
+        // 3. 토큰 발급 및 저장
+        return jwtTokenService.issueTokens(member);
     }
 
     public void logout(Long memberId) {
