@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Objects;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -43,9 +45,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<ApiResponse<Void>> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String fieldName = e.getName();
+
+        String message = String.format("'%s' 필드의 타입이 잘못되었습니다. (기대 타입: %s)",
+                fieldName, Objects.requireNonNull(e.getRequiredType()).getSimpleName());
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(3002, "파라미터의 타입이 올바르지 않습니다."));
+                .body(ApiResponse.error(3002, message));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -53,7 +60,7 @@ public class GlobalExceptionHandler {
         // 단일 파라미터 제약 조건 검증 실패
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(3005, e.getMessage()));
+                .body(ApiResponse.error(3003, e.getMessage()));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
