@@ -13,7 +13,6 @@ import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.dto.auth.GoogleLoginRequest;
-import com.example.nevera.dto.auth.LogoutRequest;
 import com.example.nevera.dto.auth.TokenRefreshRequest;
 import com.example.nevera.service.auth.JwtAuthService;
 import com.example.nevera.service.auth.GoogleAuthService;
@@ -61,26 +60,26 @@ public class AuthController {
 
     @Operation(summary = "구글 로그인 / 회원가입", description = "구글 로그인 / 회원가입")
     @PostMapping("/google")
-    public AuthTokenResponse googleLogin(@RequestBody GoogleLoginRequest request) {
-        return googleAuthService.googleLogin(request.idToken(), request.deviceId());
+    public AuthTokenResponse googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+        return googleAuthService.googleLogin(request.idToken());
     }
 
     @Operation(summary = "refresh 토큰 재발급", description = "refresh 토큰 재발급")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/refresh")
     public AuthTokenResponse refresh(
-            @RequestBody(required = false) TokenRefreshRequest body,
+            @Valid @RequestBody(required = false) TokenRefreshRequest body,
             @RequestHeader(value = "Authorization", required = false) String authHeader
     ) {
         String token = resolveToken(body, authHeader);
         return authService.refresh(token);
     }
 
-    @Operation(summary = "로그아웃", description = "해당 기기의 refresh 토큰 삭제 (deviceId 기반)")
+    @Operation(summary = "로그아웃", description = "해당 멤버의 refresh 토큰 삭제")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
-    public String logout(@AuthenticationPrincipal Long memberId, @RequestBody LogoutRequest request) {
-        authService.logout(memberId, request.deviceId());
+    public String logout(@AuthenticationPrincipal Long memberId) {
+        authService.logout(memberId);
         return "로그아웃이 완료되었습니다.";
     }
 

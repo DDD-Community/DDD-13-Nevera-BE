@@ -22,17 +22,16 @@ public class GoogleAuthService {
     private final JwtProvider jwtProvider;
     private final GoogleTokenVerifier googleTokenVerifier;
 
-    public AuthTokenResponse googleLogin(String idToken, String deviceId) {
+    public AuthTokenResponse googleLogin(String idToken) {
         GoogleUserInfo userInfo = googleTokenVerifier.verify(idToken);
         Member member = findOrCreateMember(userInfo);
 
         String accessToken = jwtProvider.generateAccessToken(member.getId(), member.getEmail(), member.getRole());
         String refreshToken = jwtProvider.generateRefreshToken(member.getId());
 
-        Token token = tokenRepository.findByMemberAndDeviceId(member, deviceId)
+        Token token = tokenRepository.findByMember(member)
                 .orElseGet(() -> Token.builder()
                         .member(member)
-                        .deviceId(deviceId)
                         .refreshToken(refreshToken)
                         .build());
         token.updateRefreshToken(refreshToken);
