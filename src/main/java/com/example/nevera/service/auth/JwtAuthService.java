@@ -83,11 +83,10 @@ public class JwtAuthService {
         String accessToken = jwtProvider.generateAccessToken(member.getId(), member.getEmail(), member.getRole());
         String refreshToken = jwtProvider.generateRefreshToken(member.getId());
 
-        // 4. 리프레시 토큰 DB 저장 또는 업데이트 (다중 디바이스 대응)
-        Token token = tokenRepository.findByMemberAndDeviceId(member, request.deviceId())
+        // 4. 리프레시 토큰 DB 저장 또는 업데이트
+        Token token = tokenRepository.findByMember(member)
                 .orElseGet(() -> Token.builder()
                         .member(member)
-                        .deviceId(request.deviceId())
                         .refreshToken(refreshToken)
                         .build());
 
@@ -98,10 +97,10 @@ public class JwtAuthService {
         return new AuthTokenResponse(accessToken, refreshToken);
     }
 
-    public void logout(Long memberId, String deviceId) {
+    public void logout(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        tokenRepository.deleteByMemberAndDeviceId(member, deviceId);
+        tokenRepository.deleteByMember(member);
     }
 
     public void deleteAccount(Long memberId) {
