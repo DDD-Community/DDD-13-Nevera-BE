@@ -23,9 +23,6 @@ public class Token {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(name = "device_id", nullable = false)
-    private String deviceId;
-
     @Column(nullable = false, length = 512)
     private String refreshToken;
 
