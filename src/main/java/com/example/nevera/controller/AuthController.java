@@ -76,17 +76,17 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "해당 멤버의 refresh 토큰 삭제")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
-    public String logout(@AuthenticationPrincipal Long memberId) {
+    public ApiResponse<?> logout(@AuthenticationPrincipal Long memberId) {
         authService.logout(memberId);
-        return "로그아웃이 완료되었습니다.";
+        return ApiResponse.success(Map.of("message", "로그아웃이 완료되었습니다."));
     }
 
     @Operation(summary = "회원 탈퇴", description = "모든 기기의 refresh 토큰 삭제 및 회원 정보 삭제")
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/withdraw")
-    public String withdraw(@AuthenticationPrincipal Long memberId) {
+    public ApiResponse<?> withdraw(@AuthenticationPrincipal Long memberId) {
         authService.deleteAccount(memberId);
-        return "회원 탈퇴가 완료되었습니다.";
+        return ApiResponse.success(Map.of("message", "회원 탈퇴가 완료되었습니다."));
     }
 
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
