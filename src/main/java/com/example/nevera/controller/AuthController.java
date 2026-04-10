@@ -1,8 +1,7 @@
 package com.example.nevera.controller;
 
-import com.example.nevera.dto.auth.EmailVerifyRequest;
-import com.example.nevera.dto.auth.LoginRequest;
-import com.example.nevera.dto.auth.SignupRequest;
+import com.example.nevera.common.response.ApiResponse;
+import com.example.nevera.dto.auth.*;
 import com.example.nevera.service.auth.EmailAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -11,14 +10,13 @@ import jakarta.validation.Valid;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
-import com.example.nevera.dto.auth.AuthTokenResponse;
-import com.example.nevera.dto.auth.GoogleLoginRequest;
-import com.example.nevera.dto.auth.TokenRefreshRequest;
 import com.example.nevera.service.auth.JwtAuthService;
 import com.example.nevera.service.auth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Tag(name = "Auth", description = "인증 관련 API (회원가입, 이메일 인증 등)") // 컨트롤러 전체 설명
 @RestController
@@ -32,23 +30,23 @@ public class AuthController {
 
     @Operation(summary = "이메일 전송", description = "가입 가능한 이메일 검증 후 이메일 전송")
     @PostMapping("/email-request")
-    public String requestEmailAuth(@RequestBody String email) {
-        emailAuthService.sendAuthCode(email);
-        return "인증 번호가 발송되었습니다.";
+    public ApiResponse<?> requestEmailAuth(@RequestBody EmailRequest request) {
+        emailAuthService.sendAuthCode(request.email());
+        return ApiResponse.success(Map.of("message", "인증 번호가 발송되었습니다."));
     }
 
     @Operation(summary = "이메일 인증", description = "이메일 인증 번호 확인")
     @PostMapping("/email-verify")
-    public String verifyEmailCode(@RequestBody EmailVerifyRequest request) {
+    public ApiResponse<?> verifyEmailCode(@RequestBody EmailVerifyRequest request) {
         emailAuthService.verifyCode(request.email(), request.authCode());
-        return "인증에 성공하였습니다.";
+        return ApiResponse.success(Map.of("message", "인증에 성공하였습니다"));
     }
 
     @Operation(summary = "회원가입", description = "회원가입")
     @PostMapping("/signup")
-    public String signup(@Valid @RequestBody SignupRequest request) {
+    public ApiResponse<?> signup(@Valid @RequestBody SignupRequest request) {
         authService.signup(request);
-        return "회원가입이 완료되었습니다.";
+        return ApiResponse.success(Map.of("message", "회원가입이 완료되었습니다."));
     }
 
     @Operation(summary = "로그인", description = "로그인")
