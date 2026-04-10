@@ -20,6 +20,12 @@ public class ApiResponse<T> {
 
     @Getter
     @AllArgsConstructor
+    static class SuccessBody {
+        private String message;
+    }
+
+    @Getter
+    @AllArgsConstructor
     public static class ErrorResponse {
         private int code;
         private String message;
