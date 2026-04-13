@@ -20,7 +20,7 @@ public class ApiResponse<T> {
 
     @Getter
     @AllArgsConstructor
-    static class SuccessBody {
+    public static class SuccessBody {
         private String message;
     }
 
