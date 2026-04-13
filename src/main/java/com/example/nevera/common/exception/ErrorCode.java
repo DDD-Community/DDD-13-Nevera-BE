@@ -16,7 +16,10 @@ public enum ErrorCode {
     EXPIRED_TOKEN(401, 2022, "만료된 토큰입니다."),
     TOKEN_NOT_FOUND(404, 2023, "토큰을 찾을 수 없습니다."),
 
-    MEMBER_NOT_FOUND(404, 2041, "존재하지 않는 사용자입니다.");
+    MEMBER_NOT_FOUND(404, 2041, "존재하지 않는 사용자입니다."),
+
+    INVENTORY_NOT_FOUND(404, 4001, "존재하지 않는 재고입니다."),
+    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다.");
 
 
 

@@ -21,7 +21,7 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -68,4 +68,20 @@ public class Inventory {
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
     }
+
+    public void update(String name, Category category, StorageLocation location,
+                       int quantity, IngredientUnit unit, OffsetDateTime expirationDate,
+                       OffsetDateTime useBy, IngredientStatus status, int cost) {
+        this.name = name;
+        this.category = category;
+        this.location = location;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.expirationDate = expirationDate;
+        this.useBy = useBy;
+        this.status = status;
+        this.cost = cost;
+    }
+
+    // TODO: 냉동 보관으로 변경 시 유통기한, 소비기한 늘리는 setter 따로 작성할지 말지 고민
 }

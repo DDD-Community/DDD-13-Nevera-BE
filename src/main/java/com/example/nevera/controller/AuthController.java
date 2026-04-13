@@ -14,6 +14,7 @@ import com.example.nevera.service.auth.JwtAuthService;
 import com.example.nevera.service.auth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -27,6 +28,7 @@ public class AuthController {
     private final EmailAuthService emailAuthService;
     private final JwtAuthService authService;
     private final GoogleAuthService googleAuthService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Operation(summary = "이메일 전송", description = "가입 가능한 이메일 검증 후 이메일 전송")
     @PostMapping("/email-request")
@@ -90,6 +92,14 @@ public class AuthController {
     public ApiResponse<?> withdraw(@AuthenticationPrincipal Long memberId) {
         authService.deleteAccount(memberId);
         return ApiResponse.success(new ApiResponse.SuccessBody("회원 탈퇴가 완료되었습니다."));
+    }
+
+    // TODO: 테스트용 API - 배포 전 삭제
+    @Operation(summary = "[TEST] 비밀번호 인코딩", description = "평문 비밀번호를 BCrypt로 인코딩합니다.")
+    @PostMapping("/test/encode-password")
+    public ApiResponse<?> encodePassword(@RequestBody Map<String, String> body) {
+        String encoded = passwordEncoder.encode(body.get("password"));
+        return ApiResponse.success(new ApiResponse.SuccessBody(encoded));
     }
 
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
