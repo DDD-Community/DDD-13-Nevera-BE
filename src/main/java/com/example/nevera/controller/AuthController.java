@@ -32,21 +32,21 @@ public class AuthController {
     @PostMapping("/email-request")
     public ApiResponse<?> requestEmailAuth(@RequestBody EmailRequest request) {
         emailAuthService.sendAuthCode(request.email());
-        return ApiResponse.success(Map.of("message", "인증 번호가 발송되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody("인증 번호가 발송되었습니다."));
     }
 
     @Operation(summary = "이메일 인증", description = "이메일 인증 번호 확인")
     @PostMapping("/email-verify")
     public ApiResponse<?> verifyEmailCode(@RequestBody EmailVerifyRequest request) {
         emailAuthService.verifyCode(request.email(), request.authCode());
-        return ApiResponse.success(Map.of("message", "인증에 성공하였습니다"));
+        return ApiResponse.success(new ApiResponse.SuccessBody("인증에 성공하였습니다."));
     }
 
     @Operation(summary = "회원가입", description = "회원가입")
     @PostMapping("/signup")
     public ApiResponse<?> signup(@Valid @RequestBody SignupRequest request) {
         authService.signup(request);
-        return ApiResponse.success(Map.of("message", "회원가입이 완료되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody("회원가입이 완료되었습니다."));
     }
 
     @Operation(summary = "로그인", description = "로그인")
@@ -59,7 +59,9 @@ public class AuthController {
     @Operation(summary = "구글 로그인 / 회원가입", description = "구글 로그인 / 회원가입")
     @PostMapping("/google")
     public AuthTokenResponse googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+
         return googleAuthService.googleLogin(request.idToken());
+
     }
 
     @Operation(summary = "refresh 토큰 재발급", description = "refresh 토큰 재발급")
@@ -78,7 +80,8 @@ public class AuthController {
     @PostMapping("/logout")
     public ApiResponse<?> logout(@AuthenticationPrincipal Long memberId) {
         authService.logout(memberId);
-        return ApiResponse.success(Map.of("message", "로그아웃이 완료되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody("로그아웃이 완료되었습니다."));
+
     }
 
     @Operation(summary = "회원 탈퇴", description = "모든 기기의 refresh 토큰 삭제 및 회원 정보 삭제")
@@ -86,7 +89,7 @@ public class AuthController {
     @DeleteMapping("/withdraw")
     public ApiResponse<?> withdraw(@AuthenticationPrincipal Long memberId) {
         authService.deleteAccount(memberId);
-        return ApiResponse.success(Map.of("message", "회원 탈퇴가 완료되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody("회원 탈퇴가 완료되었습니다."));
     }
 
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
