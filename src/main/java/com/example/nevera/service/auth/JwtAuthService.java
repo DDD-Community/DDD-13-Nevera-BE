@@ -10,6 +10,7 @@ import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.Token;
 import com.example.nevera.repository.EmailAuthRepository;
+import com.example.nevera.repository.InventoryRepository;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class JwtAuthService {
     private final EmailAuthRepository emailAuthRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
+    private final InventoryRepository inventoryRepository;
 
     public AuthTokenResponse refresh(String refreshToken) {
         jwtProvider.parseToken(refreshToken);
@@ -94,7 +96,7 @@ public class JwtAuthService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         tokenRepository.deleteByMember(member);
+        inventoryRepository.deleteAllByMemberId(memberId);
         memberRepository.delete(member);
     }
-
 }

@@ -14,7 +14,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class EmailAuthService {
 
         // 2. 인증 번호 생성
         String authCode = String.valueOf((int)(Math.random() * 899999) + 100000);
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(3);
+        OffsetDateTime expirationTime = OffsetDateTime.now().plusMinutes(3);
 
         // 3. DB 저장 (EmailAuth 테이블 UPSERT)
         // JPA의 save()는 @Id가 없거나 기존 데이터가 있으면 Update, 없으면 Insert 수행
@@ -91,7 +91,7 @@ public class EmailAuthService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.AUTH_NOT_FOUND));
 
         // 2. 만료 시간 확인
-        if (auth.getExpirationTime().isBefore(LocalDateTime.now())) {
+        if (auth.getExpirationTime().isBefore(OffsetDateTime.now())) {
             throw new BusinessException(ErrorCode.EXPIRED_AUTH_CODE);
         }
 
