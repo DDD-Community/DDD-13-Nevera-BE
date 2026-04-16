@@ -39,3 +39,5 @@ out/
 .vscode/
 
 .env
+
+src/main/resources/google-vision-key.json

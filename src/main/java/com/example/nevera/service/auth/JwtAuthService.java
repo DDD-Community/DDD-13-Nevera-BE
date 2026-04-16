@@ -55,7 +55,9 @@ public class JwtAuthService {
         if (!auth.isVerified()) {
             throw new BusinessException(ErrorCode.UNVERIFIED_EMAIL);
         }
-
+        if (!request.isPasswordMatch()) {
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+        }
         // 2. 비밀번호 암호화 및 가입 데이터 생성
         String encodedPassword = passwordEncoder.encode(request.password());
 

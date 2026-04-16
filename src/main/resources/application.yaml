@@ -47,4 +47,10 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXP}
 
 google:
+
   client-id: ${GOOGLE_CLIENT_ID}
+
+  cloud:
+    vision:
+      credentials:
+        location: ${GOOGLE_VISION_CREDENTIALS_PATH}

@@ -2,6 +2,7 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 
+import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.dto.auth.LoginRequest;
 import com.example.nevera.dto.auth.SignupRequest;
 import com.example.nevera.entity.EmailAuth;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.verify;
 
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +72,7 @@ class MemberServiceTest {
         );
 
         // 데이터는 있지만, 아직 인증(isVerified)이 안 된 상태의 객체
-        EmailAuth unverifiedAuth = new EmailAuth(request.email(), "123456", LocalDateTime.now().plusMinutes(3));
+        EmailAuth unverifiedAuth = new EmailAuth(request.email(), "123456", OffsetDateTime.now().plusMinutes(3));
 
         given(emailAuthRepository.findByEmail(request.email())).willReturn(Optional.of(unverifiedAuth));
 
@@ -88,7 +90,7 @@ class MemberServiceTest {
         );
 
         // 1. 인증이 완료된 완벽한 상태 만들기
-        EmailAuth verifiedAuth = new EmailAuth(request.email(), "123456", LocalDateTime.now().plusMinutes(3));
+        EmailAuth verifiedAuth = new EmailAuth(request.email(), "123456", OffsetDateTime.now().plusMinutes(3));
         verifiedAuth.markAsVerified();
 
         given(emailAuthRepository.findByEmail(request.email())).willReturn(Optional.of(verifiedAuth));
@@ -123,7 +125,8 @@ class MemberServiceTest {
         given(passwordEncoder.matches("rawPassword", "encodedPassword")).willReturn(true);
 
         // when (실행)
-        String result = authService.login(request);
+
+        AuthTokenResponse result = authService.emailLogin(request);
 
         // then (검증)
         assertThat(result).isEqualTo("임시_토큰_나중에_교체예정");
