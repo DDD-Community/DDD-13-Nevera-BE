@@ -48,3 +48,6 @@ jwt:
 
 google:
   client-id: ${GOOGLE_CLIENT_ID}
+
+firebase:
+  credentials: ${FIREBASE_PUSH_NOTIFICATION_SECRET}
