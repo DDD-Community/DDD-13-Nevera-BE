@@ -21,6 +21,9 @@ public enum ErrorCode {
     FCM_TOKEN_NOT_FOUND(404, 2051, "FCM 토큰이 등록되지 않은 사용자입니다."),
     FCM_TOKEN_INVALID(400, 2052, "유효하지 않은 FCM 토큰입니다."),
     FCM_SEND_ERROR(500, 2053, "푸시 알림 전송 중 오류가 발생했습니다.");
+  
+    INVENTORY_NOT_FOUND(404, 4001, "존재하지 않는 재고입니다."),
+    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다.");
 
 
 
