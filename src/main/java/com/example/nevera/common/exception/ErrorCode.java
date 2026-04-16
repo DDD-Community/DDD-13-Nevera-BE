@@ -16,7 +16,11 @@ public enum ErrorCode {
     EXPIRED_TOKEN(401, 2022, "만료된 토큰입니다."),
     TOKEN_NOT_FOUND(404, 2023, "토큰을 찾을 수 없습니다."),
 
-    MEMBER_NOT_FOUND(404, 2041, "존재하지 않는 사용자입니다.");
+    MEMBER_NOT_FOUND(404, 2041, "존재하지 않는 사용자입니다."),
+
+    FCM_TOKEN_NOT_FOUND(404, 2051, "FCM 토큰이 등록되지 않은 사용자입니다."),
+    FCM_TOKEN_INVALID(400, 2052, "유효하지 않은 FCM 토큰입니다."),
+    FCM_SEND_ERROR(500, 2053, "푸시 알림 전송 중 오류가 발생했습니다.");
 
 
 

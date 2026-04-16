@@ -10,6 +10,7 @@ import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.Token;
 import com.example.nevera.repository.EmailAuthRepository;
+import com.example.nevera.repository.FcmTokenRepository;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JwtAuthService {
 
     private final TokenRepository tokenRepository;
+    private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final EmailAuthRepository emailAuthRepository;
@@ -88,12 +90,14 @@ public class JwtAuthService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         tokenRepository.deleteByMember(member);
+        fcmTokenRepository.deleteByMember(member);
     }
 
     public void deleteAccount(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         tokenRepository.deleteByMember(member);
+        fcmTokenRepository.deleteByMember(member);
         memberRepository.delete(member);
     }
 
