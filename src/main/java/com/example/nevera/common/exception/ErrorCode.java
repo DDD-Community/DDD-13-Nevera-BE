@@ -18,6 +18,11 @@ public enum ErrorCode {
 
     MEMBER_NOT_FOUND(404, 2041, "존재하지 않는 사용자입니다."),
 
+    OCR_PROCESS_ERROR(500, 3001, "이미지 분석 중 오류가 발생했습니다."),
+    INVALID_IMAGE_FORMAT(400, 3002, "지원하지 않는 이미지 형식입니다."),
+    GOOGLE_VISION_API_ERROR(500, 3003, "구글 비전 API 호출에 실패했습니다."),
+    EMPTY_IMAGE_FILE(400, 3004, "업로드된 이미지 파일이 비어있습니다."),
+
     INVENTORY_NOT_FOUND(404, 4001, "존재하지 않는 재고입니다."),
     INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다.");
 
