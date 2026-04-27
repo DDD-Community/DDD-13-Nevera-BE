@@ -3,6 +3,7 @@ package com.example.nevera.service;
 import com.example.nevera.common.enums.IngredientStatus;
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
+import com.example.nevera.dto.inventory.ConsumedWastedResponse;
 import com.example.nevera.dto.inventory.InventoryRequest;
 import com.example.nevera.dto.inventory.InventoryResponse;
 import com.example.nevera.entity.Inventory;
@@ -64,6 +65,22 @@ public class InventoryService {
         return inventoryRepository.findAllByMemberIdAndStatus(memberId, IngredientStatus.WASTED)
                 .stream()
                 .map(InventoryResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConsumedWastedResponse> getConsumedSummary(Long memberId) {
+        return inventoryRepository.findAllByMemberIdAndStatusOrderByUpdatedAtDesc(memberId, IngredientStatus.CONSUMED)
+                .stream()
+                .map(ConsumedWastedResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConsumedWastedResponse> getWastedSummary(Long memberId) {
+        return inventoryRepository.findAllByMemberIdAndStatusOrderByUpdatedAtDesc(memberId, IngredientStatus.WASTED)
+                .stream()
+                .map(ConsumedWastedResponse::from)
                 .toList();
     }
 

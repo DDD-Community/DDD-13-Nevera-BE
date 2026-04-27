@@ -1,6 +1,7 @@
 package com.example.nevera.controller;
 
 import com.example.nevera.common.response.ApiResponse;
+import com.example.nevera.dto.inventory.ConsumedWastedResponse;
 import com.example.nevera.dto.inventory.InventoryRequest;
 import com.example.nevera.dto.inventory.InventoryResponse;
 import com.example.nevera.service.InventoryService;
@@ -54,6 +55,22 @@ public class InventoryController {
             @AuthenticationPrincipal Long memberId
     ) {
         return ApiResponse.success(inventoryService.getAllWasted(memberId));
+    }
+
+    @Operation(summary = "소비 완료 재료 요약 조회", description = "로그인한 사용자의 소비 완료 재료를 최근 수정순으로 조회 (name, dDay, location, category, quantity, unit, cost)")
+    @GetMapping("/consumed/summary")
+    public ApiResponse<List<ConsumedWastedResponse>> getConsumedSummary(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        return ApiResponse.success(inventoryService.getConsumedSummary(memberId));
+    }
+
+    @Operation(summary = "폐기 재료 요약 조회", description = "로그인한 사용자의 폐기 재료를 최근 수정순으로 조회 (name, dDay, location, category, quantity, unit, cost)")
+    @GetMapping("/wasted/summary")
+    public ApiResponse<List<ConsumedWastedResponse>> getWastedSummary(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        return ApiResponse.success(inventoryService.getWastedSummary(memberId));
     }
 
     @Operation(summary = "재료 하나 조회", description = "특정 재료 조회")
