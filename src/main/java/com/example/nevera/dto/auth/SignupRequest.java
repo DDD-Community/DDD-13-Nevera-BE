@@ -16,14 +16,9 @@ public record SignupRequest(
                 message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
         String password,
 
-        @NotBlank(message = "비밀번호 확인은 필수입니다.")
-        String passwordConfirm,
 
         @NotBlank(message = "이름은 필수 입력입니다.")
         String name
 ) {
 
-        public boolean isPasswordMatch() {
-                return password != null && password.equals(passwordConfirm);
-        }
 }

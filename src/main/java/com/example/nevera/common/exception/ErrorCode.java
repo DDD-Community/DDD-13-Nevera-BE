@@ -1,5 +1,7 @@
 package com.example.nevera.common.exception;
 
+import org.springframework.http.HttpStatus;
+
 public enum ErrorCode {
 
     INVALID_AUTH_CODE(400, 2001, "인증 번호가 일치하지 않습니다."),
@@ -24,7 +26,10 @@ public enum ErrorCode {
     EMPTY_IMAGE_FILE(400, 3004, "업로드된 이미지 파일이 비어있습니다."),
 
     INVENTORY_NOT_FOUND(404, 4001, "존재하지 않는 재고입니다."),
-    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다.");
+    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다."),
+    LLM_GENERATE_ERROR(500, 5002, "AI로부터 응답을 생성하는 데 실패했습니다."),
+    LLM_PARSE_ERROR(500, 5001, "AI 응답 결과를 파싱하는 중 오류가 발생했습니다.");
+
 
 
 

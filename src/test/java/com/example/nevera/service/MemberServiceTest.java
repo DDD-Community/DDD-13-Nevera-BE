@@ -52,7 +52,7 @@ class MemberServiceTest {
     void signup_AuthNotFound() {
         // Given (준비: 새로 만든 record 구조에 맞춰서 데이터 세팅!)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "password123", "테스터"
+                "test@example.com", "password123",  "테스터"
         );
 
         // DB에 인증 내역이 아예 없는 상황
@@ -68,7 +68,7 @@ class MemberServiceTest {
     void signup_UnverifiedEmail() {
         // Given (준비)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "password123", "테스터"
+                "test@example.com", "password123", "테스터"
         );
 
         // 데이터는 있지만, 아직 인증(isVerified)이 안 된 상태의 객체
@@ -86,7 +86,7 @@ class MemberServiceTest {
     void signup_Success() {
         // Given (준비)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "password123", "테스터"
+                "test@example.com", "password123", "테스터"
         );
 
         // 1. 인증이 완료된 완벽한 상태 만들기
