@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,7 +96,7 @@ class EmailAuthServiceTest {
         String correctCode = "123456";
 
         // 핵심! 현재 시간보다 '1분 과거'로 설정해서 이미 만료된 상태로 만듦
-        LocalDateTime pastTime = LocalDateTime.now().minusMinutes(1);
+        OffsetDateTime pastTime = OffsetDateTime.now().minusMinutes(1);
         EmailAuth expiredAuth = new EmailAuth(email, correctCode, pastTime);
 
         // DB가 이 만료된 데이터를 반환하도록 조작
@@ -116,7 +116,7 @@ class EmailAuthServiceTest {
         String wrongCode = "999999"; // 사용자가 엉뚱하게 입력한 번호
 
         // 시간은 현재 시간보다 3분 미래로 설정해서 안 지나게 만듦
-        LocalDateTime futureTime = LocalDateTime.now().plusMinutes(3);
+        OffsetDateTime futureTime = OffsetDateTime.now().plusMinutes(3);
         EmailAuth validAuth = new EmailAuth(email, correctCode, futureTime);
 
         given(emailAuthRepository.findByEmail(email)).willReturn(Optional.of(validAuth));
@@ -132,7 +132,7 @@ class EmailAuthServiceTest {
         // Given (준비)
         String email = "test@example.com";
         String correctCode = "123456";
-        LocalDateTime futureTime = LocalDateTime.now().plusMinutes(3);
+        OffsetDateTime futureTime = OffsetDateTime.now().plusMinutes(3);
 
         EmailAuth validAuth = new EmailAuth(email, correctCode, futureTime);
         given(emailAuthRepository.findByEmail(email)).willReturn(Optional.of(validAuth));

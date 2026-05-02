@@ -78,6 +78,10 @@ public class Inventory {
         this.updatedAt = OffsetDateTime.now();
     }
 
+    public void updateStatus(IngredientStatus status) {
+        this.status = status;
+    }
+
     public void update(String name, Category category, StorageLocation location,
                        int quantity, IngredientUnit unit, OffsetDateTime expirationDate,
                        OffsetDateTime useBy, IngredientStatus status, int cost) {

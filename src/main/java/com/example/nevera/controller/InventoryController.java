@@ -3,6 +3,7 @@ package com.example.nevera.controller;
 import com.example.nevera.common.response.ApiResponse;
 import com.example.nevera.dto.inventory.ConsumedWastedResponse;
 import com.example.nevera.dto.inventory.InventoryRequest;
+import com.example.nevera.dto.inventory.InventoryStatusRequest;
 import com.example.nevera.dto.inventory.InventoryResponse;
 import com.example.nevera.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -90,6 +92,17 @@ public class InventoryController {
             @Valid @RequestBody InventoryRequest request
     ) {
         return ApiResponse.success(inventoryService.update(memberId, inventoryId, request));
+    }
+
+    //TODO: 보관 장소 변경과 재료 상태 변경 시 각각의 response 값.
+    @Operation(summary = "재료 상태 변경", description = "특정 재료의 상태를 변경 (ACTIVE / CONSUMED / WASTED)")
+    @PatchMapping("/{inventoryId}/status")
+    public ApiResponse<InventoryResponse> updateStatus(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long inventoryId,
+            @Valid @RequestBody InventoryStatusRequest request
+    ) {
+        return ApiResponse.success(inventoryService.updateStatus(memberId, inventoryId, request));
     }
 
     @Operation(summary = "재료 삭제", description = "특정 재료 삭제")

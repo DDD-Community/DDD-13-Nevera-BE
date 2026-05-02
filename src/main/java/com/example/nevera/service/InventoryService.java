@@ -5,11 +5,14 @@ import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.dto.inventory.ConsumedWastedResponse;
 import com.example.nevera.dto.inventory.InventoryRequest;
+import com.example.nevera.dto.inventory.InventoryStatusRequest;
 import com.example.nevera.dto.inventory.InventoryResponse;
 import com.example.nevera.entity.Inventory;
 import com.example.nevera.entity.Member;
+import com.example.nevera.entity.SavingsRecord;
 import com.example.nevera.repository.InventoryRepository;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.repository.SavingsRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final MemberRepository memberRepository;
+    private final SavingsRecordRepository savingsRecordRepository;
 
     @Transactional
     public InventoryResponse create(Long memberId, InventoryRequest request) {
@@ -105,6 +109,29 @@ public class InventoryService {
                 request.status(),
                 request.cost()
         );
+
+        return InventoryResponse.from(inventory);
+    }
+
+    @Transactional
+    public InventoryResponse updateStatus(Long memberId, Long inventoryId, InventoryStatusRequest request) {
+        Inventory inventory = findAndValidate(memberId, inventoryId);
+
+        if (inventory.getStatus() == request.status()) {
+            return InventoryResponse.from(inventory);
+        }
+
+        inventory.updateStatus(request.status());
+
+        savingsRecordRepository.deleteByInventoryId(inventoryId);
+
+        if (request.status() == IngredientStatus.CONSUMED || request.status() == IngredientStatus.WASTED) {
+            savingsRecordRepository.save(SavingsRecord.builder()
+                    .member(inventory.getMember())
+                    .inventory(inventory)
+                    .status(request.status())
+                    .build());
+        }
 
         return InventoryResponse.from(inventory);
     }
