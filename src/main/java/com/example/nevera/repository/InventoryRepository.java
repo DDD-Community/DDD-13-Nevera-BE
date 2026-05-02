@@ -12,5 +12,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
 
     List<Inventory> findAllByMemberIdAndStatus(Long memberId, IngredientStatus status);
 
+    List<Inventory> findAllByMemberIdAndStatusOrderByUpdatedAtDesc(Long memberId, IngredientStatus status);
+
     void deleteAllByMemberId(Long memberId);
 }
