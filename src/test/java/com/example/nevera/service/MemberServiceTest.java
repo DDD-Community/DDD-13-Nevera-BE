@@ -2,6 +2,7 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 
+import com.example.nevera.dto.auth.AuthTokenResponse;
 import com.example.nevera.dto.auth.LoginRequest;
 import com.example.nevera.dto.auth.SignupRequest;
 import com.example.nevera.entity.EmailAuth;
@@ -9,6 +10,7 @@ import com.example.nevera.entity.Member;
 import com.example.nevera.repository.EmailAuthRepository;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.service.auth.JwtAuthService;
+import com.example.nevera.service.auth.JwtTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +43,9 @@ class MemberServiceTest {
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Mock
+    private JwtTokenService jwtTokenService;
+
     @InjectMocks
     private JwtAuthService authService;
 
@@ -50,7 +55,7 @@ class MemberServiceTest {
     void signup_AuthNotFound() {
         // Given (준비: 새로 만든 record 구조에 맞춰서 데이터 세팅!)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "password123", "테스터"
+                "test@example.com", "password123", "테스터"
         );
 
         // DB에 인증 내역이 아예 없는 상황
@@ -66,11 +71,11 @@ class MemberServiceTest {
     void signup_UnverifiedEmail() {
         // Given (준비)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "password123", "테스터"
+                "test@example.com", "password123", "테스터"
         );
 
         // 데이터는 있지만, 아직 인증(isVerified)이 안 된 상태의 객체
-        EmailAuth unverifiedAuth = new EmailAuth(request.email(), "123456", LocalDateTime.now().plusMinutes(3));
+        EmailAuth unverifiedAuth = new EmailAuth(request.email(), "123456", OffsetDateTime.now().plusMinutes(3));
 
         given(emailAuthRepository.findByEmail(request.email())).willReturn(Optional.of(unverifiedAuth));
 
@@ -84,11 +89,11 @@ class MemberServiceTest {
     void signup_Success() {
         // Given (준비)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "password123", "테스터"
+                "test@example.com", "password123", "테스터"
         );
 
         // 1. 인증이 완료된 완벽한 상태 만들기
-        EmailAuth verifiedAuth = new EmailAuth(request.email(), "123456", LocalDateTime.now().plusMinutes(3));
+        EmailAuth verifiedAuth = new EmailAuth(request.email(), "123456", OffsetDateTime.now().plusMinutes(3));
         verifiedAuth.markAsVerified();
 
         given(emailAuthRepository.findByEmail(request.email())).willReturn(Optional.of(verifiedAuth));
@@ -118,14 +123,18 @@ class MemberServiceTest {
                 .password("encodedPassword")
                 .build();
 
+        AuthTokenResponse fakeTokens = new AuthTokenResponse("access-token", "refresh-token");
+
         // 가짜 동작 정의 (Mocking)
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(member));
         given(passwordEncoder.matches("rawPassword", "encodedPassword")).willReturn(true);
+        given(jwtTokenService.issueTokens(member)).willReturn(fakeTokens);
 
         // when (실행)
-        String result = authService.login(request);
+        AuthTokenResponse result = authService.emailLogin(request);
 
         // then (검증)
-        assertThat(result).isEqualTo("임시_토큰_나중에_교체예정");
+        assertThat(result.accessToken()).isEqualTo("access-token");
+        assertThat(result.refreshToken()).isEqualTo("refresh-token");
     }
 }
