@@ -71,4 +71,24 @@ public class HomeController {
     ) {
         return ApiResponse.success(wishService.register(memberId, request));
     }
+
+    @Operation(summary = "목표 금액 수정")
+    @PutMapping("/wish/{wishId}")
+    public ApiResponse<WishResponse> updateWish(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long wishId,
+            @Valid @RequestBody WishRequest request
+    ) {
+        return ApiResponse.success(wishService.update(memberId, wishId, request));
+    }
+
+    @Operation(summary = "목표 금액 삭제")
+    @DeleteMapping("/wish/{wishId}")
+    public ApiResponse<?> deleteWish(
+            @AuthenticationPrincipal Long memberId,
+            @PathVariable Long wishId
+    ) {
+        wishService.delete(memberId, wishId);
+        return ApiResponse.success(new ApiResponse.SuccessBody("목표가 삭제되었습니다."));
+    }
 }
