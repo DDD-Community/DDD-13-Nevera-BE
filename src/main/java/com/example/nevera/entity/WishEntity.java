@@ -34,4 +34,9 @@ public class WishEntity {
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
     }
+
+    public void update(String name, int amount) {
+        this.name = name;
+        this.amount = amount;
+    }
 }

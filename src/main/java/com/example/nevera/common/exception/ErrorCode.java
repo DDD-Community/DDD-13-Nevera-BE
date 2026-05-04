@@ -23,7 +23,10 @@ public enum ErrorCode {
     FCM_SEND_ERROR(500, 2053, "푸시 알림 전송 중 오류가 발생했습니다."),
   
     INVENTORY_NOT_FOUND(404, 4001, "존재하지 않는 재고입니다."),
-    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다.");
+    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다."),
+
+    WISH_NOT_FOUND(404, 4051, "존재하지 않는 목표입니다."),
+    WISH_FORBIDDEN(403, 4052, "해당 목표에 대한 권한이 없습니다.");
 
 
 

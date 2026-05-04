@@ -9,5 +9,7 @@ public interface WishRepository extends JpaRepository<WishEntity, Long> {
 
     Optional<WishEntity> findTopByMemberIdOrderByCreatedAtDesc(Long memberId);
 
+    Optional<WishEntity> findByIdAndMemberId(Long id, Long memberId);
+
     void deleteAllByMemberId(Long memberId);
 }
