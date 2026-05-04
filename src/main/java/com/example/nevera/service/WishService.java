@@ -42,4 +42,29 @@ public class WishService {
         return wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId)
                 .map(WishResponse::from);
     }
+
+    @Transactional
+    public WishResponse update(Long memberId, Long wishId, WishRequest request) {
+        WishEntity wish = wishRepository.findById(wishId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.WISH_NOT_FOUND));
+
+        if (!wish.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.WISH_FORBIDDEN);
+        }
+
+        wish.update(request.name(), request.amount());
+        return WishResponse.from(wish);
+    }
+
+    @Transactional
+    public void delete(Long memberId, Long wishId) {
+        WishEntity wish = wishRepository.findById(wishId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.WISH_NOT_FOUND));
+
+        if (!wish.getMember().getId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.WISH_FORBIDDEN);
+        }
+
+        wishRepository.delete(wish);
+    }
 }

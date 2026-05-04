@@ -33,9 +33,33 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
+        String message = "요청 형식이 잘못되었습니다.";
+        int code = 3012;
+        Throwable cause = e.getCause();
+
+        // 1. 데이터 타입 불일치 (예: Integer 필드에 String "e333" 입력)
+        if (cause instanceof tools.jackson.databind.exc.InvalidFormatException target) {
+            String fieldName = target.getPath().isEmpty() ? "알 수 없는 필드" : target.getPath().getFirst().getPropertyName();
+            message = String.format("'%s' 필드의 타입이 올바르지 않습니다. (기대 타입: %s)",
+                    fieldName, target.getTargetType().getSimpleName());
+            code = 3010;
+        }
+
+        // 2. JSON 문법 오류 (예: 콤마 누락, 중괄호 미닫힘)
+        else if (cause instanceof tools.jackson.core.exc.StreamReadException target) {
+            message = "JSON 형식이 올바르지 않습니다.";
+            code = 3011;
+        }
+
+        // 3. 아예 본문이 비어 있는 경우
+        else if (e.getMessage() != null && e.getMessage().contains("Required request body is missing")) {
+            message = "요청 본문(Body)이 비어있습니다.";
+            code = 3000;
+        }
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(3000, "요청 본문(Body)이 비어있습니다."));
+                .body(ApiResponse.error(code, message));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
