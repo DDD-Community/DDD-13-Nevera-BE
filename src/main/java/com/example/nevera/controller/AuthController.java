@@ -92,6 +92,14 @@ public class AuthController {
         return ApiResponse.success(new ApiResponse.SuccessBody("회원 탈퇴가 완료되었습니다."));
     }
 
+    @Operation(summary = "내 이메일 조회", description = "로그인한 유저의 이메일 주소 반환")
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/me/email")
+    public ApiResponse<?> getMyEmail(@AuthenticationPrincipal Long memberId) {
+        String email = authService.getEmail(memberId);
+        return ApiResponse.success(Map.of("email", email));
+    }
+
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
         if (body != null && body.refreshToken() != null) return body.refreshToken();
         throw new BusinessException(ErrorCode.INVALID_TOKEN);
