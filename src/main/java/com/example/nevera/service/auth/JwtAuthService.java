@@ -103,4 +103,11 @@ public class JwtAuthService {
         inventoryRepository.deleteAllByMemberId(memberId);
         memberRepository.delete(member);
     }
+
+    @Transactional(readOnly = true)
+    public String getEmail(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        return member.getEmail();
+    }
 }
