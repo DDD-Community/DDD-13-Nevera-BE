@@ -19,6 +19,7 @@ import org.springframework.ai.chat.model.ChatModel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,45 +32,60 @@ public class LlmService {
     private final ObjectMapper objectMapper;
 
     public List<OcrRefineResponse> refineIngredientData(List<String> rawTexts) {
-        // 1. 프롬프트 구성
-        String systemInstruction = """
-            너는 영수증 전문가야. 텍스트 리스트에서 식재료를 추출해 JSON 배열로 응답해.
-            규칙:
-            1. name: 핵심 재료명만 (예: 'CJ 두부' -> '두부')
-            2. category: [%s] 중 하나 선택
-            3. location: [%s] 중 하나 선택
-            4. quantity: 숫자만 (모르면 1)
-            5. unit: [%s] 중 하나 선택
-            6. cost: 최종 금액 (숫자만)
-            """;
 
-        String prompt = String.format(systemInstruction,
-                Arrays.toString(Category.values()),
-                Arrays.toString(StorageLocation.values()),
-                Arrays.toString(IngredientUnit.values())
-        ) + "\n영수증 텍스트: " + String.join(", ", rawTexts);
+        // enum을 한국어 힌트와 함께 넘기기
+        String categoryList = Arrays.stream(Category.values())
+                .map(c -> c.name())
+                .collect(Collectors.joining(", "));
 
-        // 2. Gemini 호출
+        String locationList = Arrays.stream(StorageLocation.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
+
+        String unitList = Arrays.stream(IngredientUnit.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
+
+        // 프롬프트 간결하게 + JSON만 반환 강제
+        String prompt = String.format("""
+                        영수증 텍스트에서 식재료를 추출해 JSON 배열만 반환해. 설명 없이 JSON만.
+                        
+                        규칙:
+                        - name: 핵심 재료명 (브랜드 제거, 예: "CJ 두부" → "두부")
+                        - category: [%s] 중 택1
+                        - location: [%s] 중 택1
+                        - quantity: 숫자만 (불명확하면 1)
+                        - unit: [%s] 중 택1
+                        - cost: 최종 금액 숫자만
+                        
+                        출력 예시:
+                        [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"unit":"EA","cost":1500}]
+                        
+                        영수증: %s
+                        """,
+                categoryList, locationList, unitList,
+                String.join(", ", rawTexts)
+        );
+
+        long start = System.currentTimeMillis();
+        log.info("Gemini 호출 시작... 항목 수: {}", rawTexts.size());
+
         String response;
         try {
-
-
-            log.info("Gemini 호출 시작... 보낼 텍스트 길이: {}", rawTexts.size());
             response = chatModel.call(prompt);
-            System.out.println(prompt);
-            log.info("Gemini 응답 수신 성공!");
         } catch (Exception e) {
-
-            log.error("Gemini 호출 실패! 상세 원인: ", e);
-            throw new BusinessException(ErrorCode.LLM_GENERATE_ERROR); // 기존 에러 코드 사용
+            log.error("Gemini 호출 실패: ", e);
+            throw new BusinessException(ErrorCode.LLM_GENERATE_ERROR);
         }
 
-        // 3. JSON 파싱
-        try {
+        log.info("Gemini 응답 수신 완료! 소요시간: {}ms", System.currentTimeMillis() - start);
 
-            String jsonOutput = response.replaceAll("```json|```", "").trim();
-            return objectMapper.readValue(jsonOutput, new TypeReference<List<OcrRefineResponse>>() {});
+        try {
+            String jsonOutput = response.replaceAll("(?s)```json|```", "").trim();
+            return objectMapper.readValue(jsonOutput, new TypeReference<List<OcrRefineResponse>>() {
+            });
         } catch (JsonProcessingException e) {
+            log.error("파싱 실패. 응답 원문: {}", response);
             throw new BusinessException(ErrorCode.LLM_PARSE_ERROR);
         }
     }

@@ -2,11 +2,12 @@ spring:
   ai:
     google:
       genai:
-        api-key: AIzaSyBSBJta4SwqGUsgynv_SwSVjDAH1kcLi7M
+        api-key: ${GEMINI_API_KEY}
         chat:
           options:
             model: gemini-2.5-flash
             temperature: 0.1
+            thinking-budget: 0
   application:
     name: nevera
   config:
