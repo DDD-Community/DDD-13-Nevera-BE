@@ -1,22 +1,22 @@
 package com.example.nevera.controller;
 
+import com.example.nevera.common.exception.BusinessException;
+import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.common.response.ApiResponse;
 import com.example.nevera.dto.auth.*;
 import com.example.nevera.service.auth.EmailAuthService;
+import com.example.nevera.service.auth.GoogleAuthService;
+import com.example.nevera.service.auth.JwtAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-
-import com.example.nevera.common.exception.BusinessException;
-import com.example.nevera.common.exception.ErrorCode;
-import com.example.nevera.service.auth.JwtAuthService;
-import com.example.nevera.service.auth.GoogleAuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.Locale;
 
 @Tag(name = "Auth", description = "인증 관련 API (회원가입, 이메일 인증 등)") // 컨트롤러 전체 설명
 @RestController
@@ -27,26 +27,30 @@ public class AuthController {
     private final EmailAuthService emailAuthService;
     private final JwtAuthService authService;
     private final GoogleAuthService googleAuthService;
+    private final MessageSource messageSource;
 
     @Operation(summary = "이메일 전송", description = "가입 가능한 이메일 검증 후 이메일 전송")
     @PostMapping("/email-request")
     public ApiResponse<?> requestEmailAuth(@RequestBody EmailRequest request) {
         emailAuthService.sendAuthCode(request.email());
-        return ApiResponse.success(new ApiResponse.SuccessBody("인증 번호가 발송되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.auth.email_sent", null, Locale.KOREAN)));
     }
 
     @Operation(summary = "이메일 인증", description = "이메일 인증 번호 확인")
     @PostMapping("/email-verify")
     public ApiResponse<?> verifyEmailCode(@RequestBody EmailVerifyRequest request) {
         emailAuthService.verifyCode(request.email(), request.authCode());
-        return ApiResponse.success(new ApiResponse.SuccessBody("인증에 성공하였습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.auth.email_verified", null, Locale.KOREAN)));
     }
 
     @Operation(summary = "회원가입", description = "회원가입")
     @PostMapping("/signup")
     public ApiResponse<?> signup(@Valid @RequestBody SignupRequest request) {
         authService.signup(request);
-        return ApiResponse.success(new ApiResponse.SuccessBody("회원가입이 완료되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.auth.signup", null, Locale.KOREAN)));
     }
 
     @Operation(summary = "로그인", description = "로그인")
@@ -80,8 +84,8 @@ public class AuthController {
     @PostMapping("/logout")
     public ApiResponse<?> logout(@AuthenticationPrincipal Long memberId) {
         authService.logout(memberId);
-        return ApiResponse.success(new ApiResponse.SuccessBody("로그아웃이 완료되었습니다."));
-
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.auth.logout", null, Locale.KOREAN)));
     }
 
     @Operation(summary = "회원 탈퇴", description = "모든 기기의 refresh 토큰 삭제 및 회원 정보 삭제")
@@ -89,7 +93,8 @@ public class AuthController {
     @DeleteMapping("/withdraw")
     public ApiResponse<?> withdraw(@AuthenticationPrincipal Long memberId) {
         authService.deleteAccount(memberId);
-        return ApiResponse.success(new ApiResponse.SuccessBody("회원 탈퇴가 완료되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.auth.withdraw", null, Locale.KOREAN)));
     }
 
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
