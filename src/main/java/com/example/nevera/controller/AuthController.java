@@ -97,14 +97,6 @@ public class AuthController {
                 messageSource.getMessage("success.auth.withdraw", null, Locale.KOREAN)));
     }
 
-    @Operation(summary = "내 이메일 조회", description = "로그인한 유저의 이메일 주소 반환")
-    @SecurityRequirement(name = "bearerAuth")
-    @GetMapping("/me/email")
-    public ApiResponse<?> getMyEmail(@AuthenticationPrincipal Long memberId) {
-        String email = authService.getEmail(memberId);
-        return ApiResponse.success(Map.of("email", email));
-    }
-
     private String resolveToken(TokenRefreshRequest body, String authHeader) {
         if (body != null && body.refreshToken() != null) return body.refreshToken();
         throw new BusinessException(ErrorCode.INVALID_TOKEN);

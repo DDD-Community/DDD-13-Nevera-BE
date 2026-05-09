@@ -11,7 +11,5 @@ public record NotificationTimeRequest(
         Integer notificationHour,
 
         @NotNull(message = "알림 시간(분)은 필수 입력 값입니다.")
-        @Min(value = 0, message = "알림 시간(분)은 0 이상이어야 합니다.")
-        @Max(value = 59, message = "알림 시간(분)은 59 이하이어야 합니다.")
         Integer notificationMinute
 ) {}

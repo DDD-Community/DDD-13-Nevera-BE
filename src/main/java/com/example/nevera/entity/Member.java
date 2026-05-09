@@ -41,6 +41,14 @@ public class Member {
     private MemberRole role = MemberRole.USER;
 
 
+    @Column(nullable = false, columnDefinition = "text")
+    @Builder.Default
+    private String nickname = "TEST NICKNAME";
+
+    @Column(name = "profile_image_url", nullable = false, columnDefinition = "text")
+    @Builder.Default
+    private String profileImageUrl = "/images/default_profile.png";
+
     @Column(name = "notification_enabled", nullable = false)
     @Builder.Default
     private boolean notificationEnabled = true;
