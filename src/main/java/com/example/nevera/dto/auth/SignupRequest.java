@@ -5,16 +5,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record SignupRequest(
-        @NotBlank(message = "이메일은 필수 입력입니다.")
-        @Email(message = "이메일 형식에 맞지 않습니다.")
+        @NotBlank(message = "{validation.auth.email.not_blank}")
+        @Email(message = "{validation.auth.email.format}")
         String email,
 
-        @NotBlank(message = "비밀번호는 필수 입력입니다.")
+        @NotBlank(message = "{validation.auth.password.not_blank}")
         @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}",
-                message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
+                message = "{validation.auth.password.pattern}")
         String password,
 
-        @NotBlank(message = "이름은 필수 입력입니다.")
+        @NotBlank(message = "{validation.auth.name.not_blank}")
         String name
 ) {
 }

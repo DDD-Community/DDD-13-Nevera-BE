@@ -12,8 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 import java.util.List;
 
@@ -25,6 +28,7 @@ import java.util.List;
 public class InventoryController {
 
     private final InventoryService inventoryService;
+    private final MessageSource messageSource;
 
     @Operation(summary = "재료 등록", description = "새로운 재료 등록")
     @PostMapping
@@ -112,6 +116,7 @@ public class InventoryController {
             @PathVariable Long inventoryId
     ) {
         inventoryService.delete(memberId, inventoryId);
-        return ApiResponse.success(new ApiResponse.SuccessBody("재료 삭제 성공"));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.inventory.deleted", null, Locale.KOREAN)));
     }
 }

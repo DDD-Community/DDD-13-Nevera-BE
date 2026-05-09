@@ -77,11 +77,11 @@ public class JwtAuthService {
     public AuthTokenResponse emailLogin(LoginRequest request) {
         // 1. 이메일 존재 확인
         Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.LOGIN_FAILED));
 
         // 2. 비밀번호 일치 확인
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+            throw new BusinessException(ErrorCode.LOGIN_FAILED);
         }
 
         // 3. 토큰 발급 및 저장

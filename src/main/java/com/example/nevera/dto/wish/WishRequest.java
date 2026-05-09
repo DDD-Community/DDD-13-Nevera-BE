@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record WishRequest(
-        @NotBlank(message = "목표 이름은 필수 입력 값입니다.")
+        @NotBlank(message = "{validation.wish.name.not_blank}")
         String name,
-        @NotNull(message = "목표 금액은 필수 입력 값입니다.")
+        @NotNull(message = "{validation.wish.amount.not_null}")
         Integer amount
 ) {}

@@ -9,8 +9,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 @Tag(name = "Notification", description = "푸시 알림 관련 API")
 @RestController
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
 
     private final FcmService fcmService;
+    private final MessageSource messageSource;
 
     @Operation(summary = "FCM 토큰 등록", description = "로그인 후 디바이스의 FCM 토큰 저장")
     @SecurityRequirement(name = "bearerAuth")
@@ -28,7 +32,8 @@ public class NotificationController {
             @Valid @RequestBody FcmTokenRequest request
     ) {
         fcmService.saveToken(memberId, request.token());
-        return ApiResponse.success(new ApiResponse.SuccessBody("FCM 토큰이 등록되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.notification.token_registered", null, Locale.KOREAN)));
     }
 
     @Operation(summary = "푸시 알림 전송 (테스트용)", description = "로그인한 본인에게 푸시 알림 전송")
@@ -39,6 +44,7 @@ public class NotificationController {
             @Valid @RequestBody FcmSendRequest request
     ) {
         fcmService.sendNotification(memberId, request.title(), request.body());
-        return ApiResponse.success(new ApiResponse.SuccessBody("알림이 전송되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.notification.sent", null, Locale.KOREAN)));
     }
 }
