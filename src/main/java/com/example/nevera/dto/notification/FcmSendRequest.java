@@ -3,8 +3,8 @@ package com.example.nevera.dto.notification;
 import jakarta.validation.constraints.NotBlank;
 
 public record FcmSendRequest(
-        @NotBlank(message = "알림 제목(title)은 필수 입력값입니다.")
+        @NotBlank(message = "{validation.notification.title.not_blank}")
         String title,
-        @NotBlank(message = "알림 내용(body)은 필수 입력값입니다.")
+        @NotBlank(message = "{validation.notification.body.not_blank}")
         String body
 ) {}

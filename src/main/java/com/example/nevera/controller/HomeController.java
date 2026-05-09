@@ -12,8 +12,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class HomeController {
 
     private final HomeService savingsService;
     private final WishService wishService;
+    private final MessageSource messageSource;
 
     @Operation(summary = "이번 주 메인 요약 조회", description = "이번 주 절감액, 현재 목표 금액 조회 (절감액 = 소비 금액 - 폐기 금액)")
     @GetMapping("/summary/week")
@@ -63,7 +67,7 @@ public class HomeController {
         return ApiResponse.success(savingsService.getWasted(memberId, offset, limit));
     }
 
-    @Operation(summary = "목표 금액 등록", description = "새로운 목표를 등록하면 기존 목표는 삭제됩니다.")
+    @Operation(summary = "목표 등록", description = "새로운 목표를 등록하면 기존 목표는 삭제됩니다.")
     @PostMapping("/wish")
     public ApiResponse<WishResponse> registerWish(
             @AuthenticationPrincipal Long memberId,
@@ -72,7 +76,7 @@ public class HomeController {
         return ApiResponse.success(wishService.register(memberId, request));
     }
 
-    @Operation(summary = "목표 금액 수정")
+    @Operation(summary = "목표 수정")
     @PutMapping("/wish/{wishId}")
     public ApiResponse<WishResponse> updateWish(
             @AuthenticationPrincipal Long memberId,
@@ -82,13 +86,14 @@ public class HomeController {
         return ApiResponse.success(wishService.update(memberId, wishId, request));
     }
 
-    @Operation(summary = "목표 금액 삭제")
+    @Operation(summary = "목표 삭제")
     @DeleteMapping("/wish/{wishId}")
     public ApiResponse<?> deleteWish(
             @AuthenticationPrincipal Long memberId,
             @PathVariable Long wishId
     ) {
         wishService.delete(memberId, wishId);
-        return ApiResponse.success(new ApiResponse.SuccessBody("목표가 삭제되었습니다."));
+        return ApiResponse.success(new ApiResponse.SuccessBody(
+                messageSource.getMessage("success.wish.deleted", null, Locale.KOREAN)));
     }
 }
