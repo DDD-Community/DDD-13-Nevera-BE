@@ -12,7 +12,7 @@ services:
       - /home/azureuser/nevera/secrets:/secrets:ro
     environment:
       # .env에 있는 값을 무시하고 파일 경로로 강제 지정
-      - GOOGLE_VISION_CREDENTIALS_PATH=file:/secrets/google-vision-key.json
+      - GOOGLE_CLOUD_VISION_CREDENTIALS_LOCATION=file:/secrets/google-vision-key.json
     # ------------------
 
   nginx:
