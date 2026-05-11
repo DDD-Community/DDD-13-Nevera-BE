@@ -6,6 +6,14 @@ services:
     expose:
       - "8080"
     restart: always
+    # --- [추가 내용] ---
+    volumes:
+      # 호스트 서버에 생성된 secrets 폴더를 컨테이너의 /secrets 경로로 연결
+      - /home/azureuser/nevera/secrets:/secrets:ro
+    environment:
+      # .env에 있는 값을 무시하고 파일 경로로 강제 지정
+      - GOOGLE_VISION_CREDENTIALS_PATH=file:/secrets/google-vision-key.json
+    # ------------------
 
   nginx:
     image: nginx:alpine
