@@ -42,8 +42,21 @@ jobs:
           username: ${{ secrets.AZURE_USER }}
           key: ${{ secrets.AZURE_SSH_KEY }}
           script: |
-            mkdir -p ~/nevera
+            # 1. 프로젝트 폴더 및 시크릿 폴더 생성
+            mkdir -p ~/nevera/secrets
+            
+            # 2. GitHub Secrets의 내용을 서버의 파일로 쓰기
+            # (작은따옴표로 감싸야 JSON 내부의 큰따옴표가 깨지지 않습니다)
+            echo '${{ secrets.GITHUB_SECRET_JSON }}' > ~/nevera/secrets/google-vision-key.json
+            
+            # 3. 보안을 위해 파일 권한 제한 (소유자만 읽기/쓰기 가능)
+            chmod 600 ~/nevera/secrets/google-vision-key.json
+            
             cd ~/nevera
+            
+            # 4. 이미지 풀 및 컨테이너 실행
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/nevera-backend:latest
             sudo -E docker compose up -d --remove-orphans
+            
+            # 5. 미사용 이미지 정리
             sudo docker image prune -f
