@@ -41,12 +41,33 @@ public class Member {
     private MemberRole role = MemberRole.USER;
 
 
+    @Column(name = "notification_enabled", nullable = false)
+    @Builder.Default
+    private boolean notificationEnabled = true;
+
+    @Column(name = "notification_hour", nullable = false)
+    @Builder.Default
+    private int notificationHour = 18;
+
+    @Column(name = "notification_minute", nullable = false)
+    @Builder.Default
+    private int notificationMinute = 0;
+
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
+    }
+
+    public void updateNotificationEnabled(boolean notificationEnabled) {
+        this.notificationEnabled = notificationEnabled;
+    }
+
+    public void updateNotificationTime(int notificationHour, int notificationMinute) {
+        this.notificationHour = notificationHour;
+        this.notificationMinute = notificationMinute;
     }
 
 }

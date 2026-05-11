@@ -10,6 +10,7 @@ import com.example.nevera.entity.EmailAuth;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.Token;
 import com.example.nevera.repository.EmailAuthRepository;
+import com.example.nevera.repository.FcmTokenRepository;
 import com.example.nevera.repository.InventoryRepository;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.repository.TokenRepository;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JwtAuthService {
 
     private final TokenRepository tokenRepository;
+    private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final EmailAuthRepository emailAuthRepository;
@@ -73,11 +75,11 @@ public class JwtAuthService {
     public AuthTokenResponse emailLogin(LoginRequest request) {
         // 1. 이메일 존재 확인
         Member member = memberRepository.findByEmail(request.email())
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.LOGIN_FAILED));
 
         // 2. 비밀번호 일치 확인
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+            throw new BusinessException(ErrorCode.LOGIN_FAILED);
         }
 
         // 3. 토큰 발급 및 저장
@@ -88,13 +90,22 @@ public class JwtAuthService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         tokenRepository.deleteByMember(member);
+        fcmTokenRepository.deleteByMember(member);
     }
 
     public void deleteAccount(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         tokenRepository.deleteByMember(member);
+        fcmTokenRepository.deleteByMember(member);
         inventoryRepository.deleteAllByMemberId(memberId);
         memberRepository.delete(member);
+    }
+
+    @Transactional(readOnly = true)
+    public String getEmail(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        return member.getEmail();
     }
 }

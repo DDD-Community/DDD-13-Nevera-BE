@@ -4,32 +4,41 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorCode {
 
-    INVALID_AUTH_CODE(400, 2001, "인증 번호가 일치하지 않습니다."),
-    EXPIRED_AUTH_CODE(400, 2002, "인증 시간이 만료되었습니다."),
-    UNVERIFIED_EMAIL(400, 2003, "이메일 인증이 완료되지 않았습니다."),
-    INVALID_PASSWORD(400, 2004, "비밀번호가 일치하지 않습니다."),
-    AUTH_NOT_FOUND(404, 2005, "인증 요청 내역이 없습니다."),
-    DUPLICATE_EMAIL(409, 2006, "이미 사용 중인 이메일입니다."),
-    MAIL_SEND_ERROR(500, 2007, "메일 발송 중 오류가 발생했습니다."),
+    INVALID_AUTH_CODE(400, 2001, "error.auth.invalid_auth_code"),
+    EXPIRED_AUTH_CODE(400, 2002, "error.auth.expired_auth_code"),
+    UNVERIFIED_EMAIL(400, 2003, "error.auth.unverified_email"),
+    INVALID_PASSWORD(400, 2004, "error.auth.invalid_password"),
+    AUTH_NOT_FOUND(404, 2005, "error.auth.auth_not_found"),
+    DUPLICATE_EMAIL(409, 2006, "error.auth.duplicate_email"),
+    MAIL_SEND_ERROR(500, 2007, "error.auth.mail_send_error"),
+    LOGIN_FAILED(401, 2008, "error.auth.login_failed"),
 
-    INVALID_GOOGLE_TOKEN(401, 2011, "유효하지 않은 Google 토큰입니다."),
 
-    INVALID_TOKEN(401, 2021, "유효하지 않거나 권한이 없거나 토큰이 없습니다."),
-    EXPIRED_TOKEN(401, 2022, "만료된 토큰입니다."),
-    TOKEN_NOT_FOUND(404, 2023, "토큰을 찾을 수 없습니다."),
+    INVALID_GOOGLE_TOKEN(401, 2011, "error.auth.invalid_google_token"),
 
-    MEMBER_NOT_FOUND(404, 2041, "존재하지 않는 사용자입니다."),
+    INVALID_TOKEN(401, 2021, "error.auth.invalid_token"),
+    EXPIRED_TOKEN(401, 2022, "error.auth.expired_token"),
+    TOKEN_NOT_FOUND(404, 2023, "error.auth.token_not_found"),
 
-    OCR_PROCESS_ERROR(500, 3001, "이미지 분석 중 오류가 발생했습니다."),
-    INVALID_IMAGE_FORMAT(400, 3002, "지원하지 않는 이미지 형식입니다."),
-    GOOGLE_VISION_API_ERROR(500, 3003, "구글 비전 API 호출에 실패했습니다."),
-    EMPTY_IMAGE_FILE(400, 3004, "업로드된 이미지 파일이 비어있습니다."),
+    MEMBER_NOT_FOUND(404, 2041, "error.member.member_not_found"),
 
-    INVENTORY_NOT_FOUND(404, 4001, "존재하지 않는 재고입니다."),
-    INVENTORY_FORBIDDEN(403, 4002, "해당 재고에 대한 권한이 없습니다."),
-    LLM_GENERATE_ERROR(500, 5002, "AI로부터 응답을 생성하는 데 실패했습니다."),
-    LLM_PARSE_ERROR(500, 5001, "AI 응답 결과를 파싱하는 중 오류가 발생했습니다.");
+    OCR_PROCESS_ERROR(500, 3001, "error.ocr.process_error"),
+    INVALID_IMAGE_FORMAT(400, 3002, "error.ocr.invalid_image_format"),
+    GOOGLE_VISION_API_ERROR(500, 3003, "error.ocr.google_vision_api_error"),
+    EMPTY_IMAGE_FILE(400, 3004, "error.ocr.empty_image_file"),
 
+    LLM_GENERATE_ERROR(500, 5002, "error.llm.generate_error"),
+    LLM_PARSE_ERROR(500, 5001, "error.llm.parse_error"),
+
+    FCM_TOKEN_NOT_FOUND(404, 2051, "error.fcm.fcm_token_not_found"),
+    FCM_TOKEN_INVALID(400, 2052, "error.fcm.fcm_token_invalid"),
+    FCM_SEND_ERROR(500, 2053, "error.fcm.fcm_send_error"),
+
+    INVENTORY_NOT_FOUND(404, 4001, "error.inventory.inventory_not_found"),
+    INVENTORY_FORBIDDEN(403, 4002, "error.inventory.inventory_forbidden"),
+
+    WISH_NOT_FOUND(404, 4051, "error.wish.wish_not_found"),
+    WISH_FORBIDDEN(403, 4052, "error.wish.wish_forbidden");
 
 
 

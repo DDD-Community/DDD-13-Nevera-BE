@@ -41,3 +41,6 @@ out/
 .env
 
 src/main/resources/google-vision-key.json
+/src/main/resources/nevera-firebase-adminsdk.json
+fcm-test.html
+firebase-messaging-sw.js

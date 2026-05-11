@@ -10,6 +10,7 @@ import com.example.nevera.entity.Member;
 import com.example.nevera.repository.EmailAuthRepository;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.service.auth.JwtAuthService;
+import com.example.nevera.service.auth.JwtTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +28,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
+<<<<<<< HEAD
 import java.time.LocalDateTime;
+=======
+>>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -43,6 +47,9 @@ class MemberServiceTest {
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Mock
+    private JwtTokenService jwtTokenService;
+
     @InjectMocks
     private JwtAuthService authService;
 
@@ -52,7 +59,11 @@ class MemberServiceTest {
     void signup_AuthNotFound() {
         // Given (준비: 새로 만든 record 구조에 맞춰서 데이터 세팅!)
         SignupRequest request = new SignupRequest(
+<<<<<<< HEAD
                 "test@example.com", "password123",  "테스터"
+=======
+                "test@example.com", "password123", "테스터"
+>>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
         );
 
         // DB에 인증 내역이 아예 없는 상황
@@ -120,15 +131,22 @@ class MemberServiceTest {
                 .password("encodedPassword")
                 .build();
 
+        AuthTokenResponse fakeTokens = new AuthTokenResponse("access-token", "refresh-token");
+
         // 가짜 동작 정의 (Mocking)
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(member));
         given(passwordEncoder.matches("rawPassword", "encodedPassword")).willReturn(true);
+        given(jwtTokenService.issueTokens(member)).willReturn(fakeTokens);
 
         // when (실행)
+<<<<<<< HEAD
 
+=======
+>>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
         AuthTokenResponse result = authService.emailLogin(request);
 
         // then (검증)
-        assertThat(result).isEqualTo("임시_토큰_나중에_교체예정");
+        assertThat(result.accessToken()).isEqualTo("access-token");
+        assertThat(result.refreshToken()).isEqualTo("refresh-token");
     }
 }

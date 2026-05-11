@@ -10,21 +10,21 @@ import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
 public record InventoryRequest(
-        @NotBlank(message = "재료 이름은 필수 입력 값입니다.")
+        @NotBlank(message = "{validation.inventory.name.not_blank}")
         String name,
-        @NotNull(message = "카테고리는 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.category.not_null}")
         Category category,
-        @NotNull(message = "보관 장소는 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.location.not_null}")
         StorageLocation location,
-        @NotNull(message = "수량은 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.quantity.not_null}")
         Integer quantity,
-        @NotNull(message = "단위는 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.unit.not_null}")
         IngredientUnit unit,
-        @NotNull(message = "유통기한은 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.expiration_date.not_null}")
         OffsetDateTime expirationDate,
         OffsetDateTime useBy,
-        @NotNull(message = "재료 상태는 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.status.not_null}")
         IngredientStatus status,
-        @NotNull(message = "구매 비용은 필수 입력 값입니다.")
+        @NotNull(message = "{validation.inventory.cost.not_null}")
         Integer cost
 ) {}

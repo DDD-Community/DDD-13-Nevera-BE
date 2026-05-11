@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum IngredientStatus {
-    ACTIVE("활성화"),
-    CONSUMED("구조"),
-    WASTED("폐기");
+public enum WishStatus {
+    ACTIVE("도전 중"),
+    ACHIEVED("달성완료"),
+    FAILED("실패");
 
     private final String displayName;
 }
