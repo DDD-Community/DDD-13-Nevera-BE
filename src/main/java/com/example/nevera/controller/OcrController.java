@@ -5,6 +5,7 @@ import com.example.nevera.common.response.ApiResponse;
 import com.example.nevera.dto.inventory.OcrRefineResponse;
 import com.example.nevera.service.LlmService;
 import com.example.nevera.service.OcrService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +26,15 @@ public class OcrController {
     private final OcrService ocrService;
     private final LlmService llmService;
 
+    @Operation(summary = "재료 스캔", description = "영수증 재료스캔")
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<List<OcrRefineResponse>>> extract(
+    public ApiResponse<List<OcrRefineResponse>> extract(
             @RequestPart("file") MultipartFile file) {
 
-        // 1. OCR로 텍스트 긁어오기
         List<String> rawTexts = ocrService.extractTextFromImage(file);
-
-        // 2. Gemini로 데이터 정제하기
         List<OcrRefineResponse> refined = llmService.refineIngredientData(rawTexts);
 
-        return ResponseEntity.ok(ApiResponse.success(refined));
+        return ApiResponse.success(refined);
     }
 
 

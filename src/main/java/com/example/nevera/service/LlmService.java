@@ -48,21 +48,22 @@ public class LlmService {
 
         // 프롬프트 간결하게 + JSON만 반환 강제
         String prompt = String.format("""
-                        영수증 텍스트에서 식재료를 추출해 JSON 배열만 반환해. 설명 없이 JSON만.
-                        
-                        규칙:
-                        - name: 핵심 재료명 (브랜드 제거, 예: "CJ 두부" → "두부")
-                        - category: [%s] 중 택1
-                        - location: [%s] 중 택1
-                        - quantity: 숫자만 (불명확하면 1)
-                        - unit: [%s] 중 택1
-                        - cost: 최종 금액 숫자만
-                        
-                        출력 예시:
-                        [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"unit":"EA","cost":1500}]
-                        
-                        영수증: %s
-                        """,
+                영수증 또는 이커머스 주문내역 텍스트에서 식재료를 추출해 JSON 배열만 반환해. 설명 없이 JSON만.
+                
+                규칙:
+                - name: 핵심 재료명 (브랜드 제거, 예: "CJ 두부" → "두부")
+                - category: [%s] 중 택1
+                - location: [%s] 중 택1
+                - quantity: 숫자만 (불명확하면 1)
+                - unit: [%s] 중 택1
+                - cost: 최종 금액 숫자만 (할인가 적용된 금액)
+                - 식재료가 아닌 항목(배송비, 쿠폰, 포인트 등)은 제외
+                
+                출력 예시:
+                [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"unit":"EA","cost":1500}]
+                
+                텍스트: %s
+                """,
                 categoryList, locationList, unitList,
                 String.join(", ", rawTexts)
         );
