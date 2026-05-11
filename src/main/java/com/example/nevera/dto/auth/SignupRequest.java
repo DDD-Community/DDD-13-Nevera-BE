@@ -16,12 +16,12 @@ public record SignupRequest(
                 message = "{validation.auth.password.pattern}")
         String password,
 
-<<<<<<< HEAD
+
 
         @NotBlank(message = "이름은 필수 입력입니다.")
-=======
+
         @NotBlank(message = "{validation.auth.name.not_blank}")
->>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
+
         String name
 ) {
 

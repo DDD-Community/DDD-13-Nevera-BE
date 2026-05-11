@@ -44,7 +44,8 @@ public enum ErrorCode {
 
     private final int status;
     private final int code;
-    private final String message;
+
+    private final String messageKey;
 
     public int getStatus() {
         return status;
@@ -54,13 +55,13 @@ public enum ErrorCode {
         return code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMessageKey() {
+        return messageKey;
     }
 
-    ErrorCode(int status, int code, String message) {
+    ErrorCode(int status, int code, String messageKey) {
         this.status = status;
         this.code = code;
-        this.message = message;
+        this.messageKey = messageKey;
     }
 }

@@ -19,10 +19,6 @@ public class MessageConfig {
         return ms;
     }
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
 
     @Bean
     public LocalValidatorFactoryBean validator(MessageSource messageSource) {

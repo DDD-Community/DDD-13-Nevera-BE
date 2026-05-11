@@ -28,10 +28,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
-<<<<<<< HEAD
 import java.time.LocalDateTime;
-=======
->>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
+
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -59,11 +57,10 @@ class MemberServiceTest {
     void signup_AuthNotFound() {
         // Given (준비: 새로 만든 record 구조에 맞춰서 데이터 세팅!)
         SignupRequest request = new SignupRequest(
-<<<<<<< HEAD
-                "test@example.com", "password123",  "테스터"
-=======
+
+
                 "test@example.com", "password123", "테스터"
->>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
+
         );
 
         // DB에 인증 내역이 아예 없는 상황
@@ -139,10 +136,9 @@ class MemberServiceTest {
         given(jwtTokenService.issueTokens(member)).willReturn(fakeTokens);
 
         // when (실행)
-<<<<<<< HEAD
 
-=======
->>>>>>> b88a64102c26ca6a4aced4a73a56338e0d5fa41d
+
+
         AuthTokenResponse result = authService.emailLogin(request);
 
         // then (검증)
