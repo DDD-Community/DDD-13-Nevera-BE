@@ -1,4 +1,13 @@
 spring:
+  ai:
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY}
+        chat:
+          options:
+            model: gemini-2.5-flash
+            temperature: 0.1
+            thinking-budget: 0
   application:
     name: nevera
   config:
@@ -54,7 +63,15 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXP}
 
 google:
+
   client-id: ${GOOGLE_CLIENT_ID}
+
+
+  cloud:
+    vision:
+      credentials:
+        location: ${GOOGLE_VISION_CREDENTIALS_PATH}
+
 
 firebase:
   credentials: ${FIREBASE_PUSH_NOTIFICATION_SECRET}
