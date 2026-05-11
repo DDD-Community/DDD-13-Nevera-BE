@@ -47,7 +47,7 @@ jobs:
             
             # 2. GitHub Secrets의 내용을 서버의 파일로 쓰기
             # (작은따옴표로 감싸야 JSON 내부의 큰따옴표가 깨지지 않습니다)
-            echo '${{ secrets.GITHUB_SECRET_JSON }}' > ~/nevera/secrets/google-vision-key.json
+            echo '${{ secrets.VISION_SECRET_JSON }}' > ~/nevera/secrets/google-vision-key.json
             
             # 3. 보안을 위해 파일 권한 제한 (소유자만 읽기/쓰기 가능)
             chmod 600 ~/nevera/secrets/google-vision-key.json
