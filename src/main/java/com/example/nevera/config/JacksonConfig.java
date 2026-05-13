@@ -1,5 +1,7 @@
 package com.example.nevera.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,13 @@ public class JacksonConfig {
                     .withZone(ZoneId.of("Asia/Seoul"));
 
     @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
+
+
+    }
     public JsonMapperBuilderCustomizer offsetDateTimeCustomizer() {
         SimpleModule module = new SimpleModule();
         module.addSerializer(OffsetDateTime.class, new StdSerializer<>(OffsetDateTime.class) {
