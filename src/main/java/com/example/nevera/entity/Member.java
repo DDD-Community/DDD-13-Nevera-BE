@@ -43,7 +43,7 @@ public class Member {
 
     @Column(nullable = false, columnDefinition = "text")
     @Builder.Default
-    private String nickname = "TEST NICKNAME";
+    private String nickname = "닉네임설정";
 
     @Column(name = "profile_image_url", nullable = false, columnDefinition = "text")
     @Builder.Default
@@ -76,6 +76,10 @@ public class Member {
     public void updateNotificationTime(int notificationHour, int notificationMinute) {
         this.notificationHour = notificationHour;
         this.notificationMinute = notificationMinute;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
 }

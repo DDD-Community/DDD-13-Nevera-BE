@@ -2,6 +2,7 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
+import com.example.nevera.dto.mypage.NicknameRequest;
 import com.example.nevera.dto.mypage.NotificationSettingRequest;
 import com.example.nevera.dto.mypage.NotificationSettingResponse;
 import com.example.nevera.dto.mypage.NotificationTimeRequest;
@@ -41,6 +42,15 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         member.updateNotificationEnabled(request.notificationEnabled());
         return NotificationSettingResponse.from(member);
+    }
+
+    @Transactional
+    public ProfileResponse updateNickname(Long memberId, NicknameRequest request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        member.updateNickname(request.nickname());
+        boolean hasWish = wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId).isPresent();
+        return ProfileResponse.from(member, hasWish);
     }
 
     @Transactional
