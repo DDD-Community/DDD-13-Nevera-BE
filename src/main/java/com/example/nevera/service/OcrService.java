@@ -43,7 +43,6 @@ public class OcrService {
             List<String> detectedTexts = new ArrayList<>();
 
             for (AnnotateImageResponse res : responses) {
-
                 if (res.hasError()) {
                     log.error("Google Vision API Error: {}", res.getError().getMessage());
                     throw new BusinessException(ErrorCode.GOOGLE_VISION_API_ERROR);
@@ -57,14 +56,14 @@ public class OcrService {
 
             return detectedTexts;
 
+        } catch (BusinessException e) {
+            throw e;
         } catch (IOException e) {
-
             log.error("OCR Image Processing IO Error", e);
             throw new BusinessException(ErrorCode.OCR_PROCESS_ERROR);
         } catch (Exception e) {
-
             log.error("Unexpected OCR Error", e);
-            throw e;
+            throw new BusinessException(ErrorCode.OCR_PROCESS_ERROR);
         }
     }
 }
