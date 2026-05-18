@@ -6,7 +6,6 @@ public record ProfileResponse(
         String profileImageUrl,
         String nickname,
         String email,
-        boolean notificationEnabled,
         boolean hasWish
 ) {
     public static ProfileResponse from(Member member, boolean hasWish) {
@@ -14,7 +13,6 @@ public record ProfileResponse(
                 member.getProfileImageUrl(),
                 member.getNickname(),
                 member.getEmail(),
-                member.isNotificationEnabled(),
                 hasWish
         );
     }
