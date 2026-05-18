@@ -5,8 +5,10 @@ import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.entity.FcmToken;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.Notification;
+import com.example.nevera.entity.NotificationFailure;
 import com.example.nevera.repository.FcmTokenRepository;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.repository.NotificationFailureRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -23,6 +25,7 @@ public class FcmService {
 
     private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
+    private final NotificationFailureRepository notificationFailureRepository;
 
     @Transactional
     public void saveToken(Long memberId, String token) {
@@ -81,7 +84,13 @@ public class FcmService {
                 if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED) {
                     fcmTokenRepository.delete(fcmToken);
                 }
-                log.warn("FCM 전송 실패 memberId={}", member.getId());
+                log.warn("FCM 전송 실패 memberId={} notificationId={}", member.getId(), notification.getId());
+                notificationFailureRepository.save(NotificationFailure.builder()
+                        .member(member)
+                        .inventory(notification.getInventory())
+                        .notification(notification)
+                        .reason(e.getMessage())
+                        .build());
             }
         });
     }
