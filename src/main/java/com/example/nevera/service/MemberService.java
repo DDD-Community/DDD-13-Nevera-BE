@@ -2,11 +2,13 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
-import com.example.nevera.dto.mypage.NotificationSettingRequest;
+import com.example.nevera.dto.mypage.NicknameRequest;
 import com.example.nevera.dto.mypage.NotificationSettingResponse;
 import com.example.nevera.dto.mypage.NotificationTimeRequest;
+import com.example.nevera.dto.mypage.ProfileResponse;
 import com.example.nevera.entity.Member;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final WishRepository wishRepository;
+
+    @Transactional(readOnly = true)
+    public ProfileResponse getProfile(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        boolean hasWish = wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId).isPresent();
+        return ProfileResponse.from(member, hasWish);
+    }
 
     @Transactional(readOnly = true)
     public NotificationSettingResponse getNotificationSetting(Long memberId) {
@@ -25,11 +36,12 @@ public class MemberService {
     }
 
     @Transactional
-    public NotificationSettingResponse updateNotificationEnabled(Long memberId, NotificationSettingRequest request) {
+    public ProfileResponse updateNickname(Long memberId, NicknameRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        member.updateNotificationEnabled(request.notificationEnabled());
-        return NotificationSettingResponse.from(member);
+        member.updateNickname(request.nickname());
+        boolean hasWish = wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId).isPresent();
+        return ProfileResponse.from(member, hasWish);
     }
 
     @Transactional

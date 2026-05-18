@@ -4,6 +4,7 @@ import com.example.nevera.common.enums.IngredientStatus;
 import com.example.nevera.entity.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface InventoryRepository extends JpaRepository<Inventory, Long> {
@@ -15,4 +16,10 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     List<Inventory> findAllByMemberIdAndStatusOrderByUpdatedAtDesc(Long memberId, IngredientStatus status);
 
     void deleteAllByMemberId(Long memberId);
+
+    List<Inventory> findAllByStatusAndExpirationDateGreaterThanEqualAndExpirationDateLessThan(
+            IngredientStatus status,
+            OffsetDateTime startOfDay,
+            OffsetDateTime endOfDay
+    );
 }

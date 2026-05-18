@@ -68,3 +68,7 @@ google:
 
 firebase:
   credentials: ${FIREBASE_PUSH_NOTIFICATION_SECRET}
+
+terms:
+  service-url: ${TERMS_OF_SERVICE_URL}
+  privacy-url: ${PRIVACY_POLICY_URL}
