@@ -41,6 +41,14 @@ public class Member {
     private MemberRole role = MemberRole.USER;
 
 
+    @Column(nullable = false, columnDefinition = "text")
+    @Builder.Default
+    private String nickname = "닉네임설정";
+
+    @Column(name = "profile_image_url", nullable = false, columnDefinition = "text")
+    @Builder.Default
+    private String profileImageUrl = "/images/default_profile.png";
+
     @Column(name = "notification_enabled", nullable = false)
     @Builder.Default
     private boolean notificationEnabled = true;
@@ -68,6 +76,10 @@ public class Member {
     public void updateNotificationTime(int notificationHour, int notificationMinute) {
         this.notificationHour = notificationHour;
         this.notificationMinute = notificationMinute;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
 }
