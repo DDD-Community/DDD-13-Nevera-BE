@@ -3,7 +3,6 @@ package com.example.nevera.service;
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.dto.mypage.NicknameRequest;
-import com.example.nevera.dto.mypage.NotificationSettingRequest;
 import com.example.nevera.dto.mypage.NotificationSettingResponse;
 import com.example.nevera.dto.mypage.NotificationTimeRequest;
 import com.example.nevera.dto.mypage.ProfileResponse;
@@ -37,14 +36,6 @@ public class MemberService {
     }
 
     @Transactional
-    public NotificationSettingResponse updateNotificationEnabled(Long memberId, NotificationSettingRequest request) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        member.updateNotificationEnabled(request.notificationEnabled());
-        return NotificationSettingResponse.from(member);
-    }
-
-    @Transactional
     public ProfileResponse updateNickname(Long memberId, NicknameRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -55,9 +46,6 @@ public class MemberService {
 
     @Transactional
     public NotificationSettingResponse updateNotificationTime(Long memberId, NotificationTimeRequest request) {
-        if (request.notificationMinute() != 0 && request.notificationMinute() != 30) {
-            throw new BusinessException(ErrorCode.INVALID_NOTIFICATION_MINUTE);
-        }
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         member.updateNotificationTime(request.notificationHour(), request.notificationMinute());

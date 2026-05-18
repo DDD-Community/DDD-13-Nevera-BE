@@ -2,6 +2,8 @@ package com.example.nevera.entity;
 
 
 import com.example.nevera.common.enums.MemberRole;
+import com.example.nevera.common.exception.BusinessException;
+import com.example.nevera.common.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,15 +45,11 @@ public class Member {
 
     @Column(nullable = false, columnDefinition = "text")
     @Builder.Default
-    private String nickname = "닉네임설정";
+    private String nickname = "식구";
 
     @Column(name = "profile_image_url", nullable = false, columnDefinition = "text")
     @Builder.Default
     private String profileImageUrl = "/images/default_profile.png";
-
-    @Column(name = "notification_enabled", nullable = false)
-    @Builder.Default
-    private boolean notificationEnabled = true;
 
     @Column(name = "notification_hour", nullable = false)
     @Builder.Default
@@ -69,11 +67,10 @@ public class Member {
         this.createdAt = OffsetDateTime.now();
     }
 
-    public void updateNotificationEnabled(boolean notificationEnabled) {
-        this.notificationEnabled = notificationEnabled;
-    }
-
     public void updateNotificationTime(int notificationHour, int notificationMinute) {
+        if (notificationMinute != 0 && notificationMinute != 30) {
+            throw new BusinessException(ErrorCode.INVALID_NOTIFICATION_MINUTE);
+        }
         this.notificationHour = notificationHour;
         this.notificationMinute = notificationMinute;
     }

@@ -25,7 +25,7 @@ public class WishEntity {
     private String name;
 
     @Column(nullable = false)
-    private int amount;
+    private Long amount;
 
     @Column(name = "created_at", updatable = false, nullable = false)
     private OffsetDateTime createdAt;
@@ -35,7 +35,7 @@ public class WishEntity {
         this.createdAt = OffsetDateTime.now();
     }
 
-    public void update(String name, int amount) {
+    public void update(String name, Long amount) {
         this.name = name;
         this.amount = amount;
     }

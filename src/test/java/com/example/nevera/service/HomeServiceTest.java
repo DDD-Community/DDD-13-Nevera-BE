@@ -72,7 +72,7 @@ class HomeServiceTest {
     @Test
     @DisplayName("wish 있을 때 주간 요약 조회 - wish 정보가 포함된다")
     void getWeeklySummary_withWish() {
-        WishResponse wish = new WishResponse("노트북", 1_500_000);
+        WishResponse wish = new WishResponse(1L, "노트북", 1_500_000L);
         given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
                 eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any())).willReturn(0);
         given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
@@ -89,7 +89,7 @@ class HomeServiceTest {
     @Test
     @DisplayName("wish 있을 때 월간 요약 조회 - wish 정보가 포함된다")
     void getMonthlySummary_withWish() {
-        WishResponse wish = new WishResponse("노트북", 1_500_000);
+        WishResponse wish = new WishResponse(1L, "노트북", 1_500_000L);
         given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
                 eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any())).willReturn(0);
         given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
