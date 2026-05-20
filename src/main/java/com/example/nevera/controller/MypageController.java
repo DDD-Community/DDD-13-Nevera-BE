@@ -1,11 +1,7 @@
 package com.example.nevera.controller;
 
 import com.example.nevera.common.response.ApiResponse;
-import com.example.nevera.dto.mypage.NicknameRequest;
-import com.example.nevera.dto.mypage.NotificationSettingResponse;
-import com.example.nevera.dto.mypage.NotificationTimeRequest;
-import com.example.nevera.dto.mypage.ProfileResponse;
-import com.example.nevera.dto.mypage.TermsResponse;
+import com.example.nevera.dto.mypage.*;
 import com.example.nevera.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -16,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Mypage", description = "마이페이지 관련 API")
+@Tag(name = "Mypage", description = "온보딩, 마이페이지 관련 API")
 @RestController
 @RequestMapping("/api/v1/mypage")
 @RequiredArgsConstructor
@@ -66,5 +62,13 @@ public class MypageController {
             @Valid @RequestBody NotificationTimeRequest request
     ) {
         return ApiResponse.success(memberService.updateNotificationTime(memberId, request));
+    }
+
+    @Operation(summary = "닉네임, 위시 등록 여부 조회", description = "온보딩 완료 여부 확인을 위한 닉네임, 위시 등록 여부 조회")
+    @GetMapping("/onboarding/complete")
+    public ApiResponse<OnboardingCompleteResponse> getOnboardingCompleted(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        return ApiResponse.success(memberService.getOnboardingCompletedStatus(memberId));
     }
 }
