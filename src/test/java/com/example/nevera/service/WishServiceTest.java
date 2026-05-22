@@ -41,7 +41,7 @@ class WishServiceTest {
         return Member.builder().email("test@test.com").build();
     }
 
-    private WishEntity wishEntity(String name, int amount) {
+    private WishEntity wishEntity(String name, long amount) {
         return WishEntity.builder().member(member()).name(name).amount(amount).build();
     }
 
@@ -50,7 +50,7 @@ class WishServiceTest {
     @Test
     @DisplayName("wish 등록 시 기존 wish가 모두 삭제된 후 새로 저장된다")
     void register_deletesExistingAndSavesNew() {
-        WishRequest request = new WishRequest("노트북", 1_500_000);
+        WishRequest request = new WishRequest("노트북", 1_500_000L);
         given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member()));
         given(wishRepository.save(any(WishEntity.class))).willReturn(wishEntity("노트북", 1_500_000));
 
@@ -59,13 +59,13 @@ class WishServiceTest {
         verify(wishRepository, times(1)).deleteAllByMemberId(MEMBER_ID);
         verify(wishRepository, times(1)).save(any(WishEntity.class));
         assertThat(result.name()).isEqualTo("노트북");
-        assertThat(result.amount()).isEqualTo(1_500_000);
+        assertThat(result.amount()).isEqualTo(1_500_000L);
     }
 
     @Test
     @DisplayName("wish 재등록 시 기존 wish가 삭제되고 새 wish로 교체된다")
     void register_replacesExistingWish() {
-        WishRequest newRequest = new WishRequest("카메라", 800_000);
+        WishRequest newRequest = new WishRequest("카메라", 800_000L);
         given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member()));
         given(wishRepository.save(any(WishEntity.class))).willReturn(wishEntity("카메라", 800_000));
 
@@ -73,7 +73,7 @@ class WishServiceTest {
 
         verify(wishRepository, times(1)).deleteAllByMemberId(MEMBER_ID);
         assertThat(result.name()).isEqualTo("카메라");
-        assertThat(result.amount()).isEqualTo(800_000);
+        assertThat(result.amount()).isEqualTo(800_000L);
     }
 
     @Test
@@ -81,7 +81,7 @@ class WishServiceTest {
     void register_memberNotFound() {
         given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> wishService.register(MEMBER_ID, new WishRequest("노트북", 1_500_000)))
+        assertThatThrownBy(() -> wishService.register(MEMBER_ID, new WishRequest("노트북", 1_500_000L)))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -105,6 +105,6 @@ class WishServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo("노트북");
-        assertThat(result.get().amount()).isEqualTo(1_500_000);
+        assertThat(result.get().amount()).isEqualTo(1_500_000L);
     }
 }

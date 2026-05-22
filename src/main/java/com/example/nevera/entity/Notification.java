@@ -6,12 +6,12 @@ import lombok.*;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "wish")
+@Table(name = "notification")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class WishEntity {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +21,21 @@ public class WishEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false, columnDefinition = "text")
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_id", nullable = false)
+    private Inventory inventory;
 
-    @Column(nullable = false)
-    private Long amount;
+    @Column(nullable = false, columnDefinition = "text")
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "text")
+    private String message;
+
+    @Column(nullable = false, columnDefinition = "text")
+    private String deeplink;
+
+    @Column(nullable = false, columnDefinition = "text")
+    private String type;
 
     @Column(name = "created_at", updatable = false, nullable = false)
     private OffsetDateTime createdAt;
@@ -33,10 +43,5 @@ public class WishEntity {
     @PrePersist
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
-    }
-
-    public void update(String name, Long amount) {
-        this.name = name;
-        this.amount = amount;
     }
 }
