@@ -62,6 +62,10 @@ public class Member {
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
+    @Column(name = "is_nickname_changed")
+    @Builder.Default
+    private boolean nicknameChanged = false;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
@@ -76,6 +80,7 @@ public class Member {
     }
 
     public void updateNickname(String nickname) {
+        this.nicknameChanged = true;
         this.nickname = nickname;
     }
 
