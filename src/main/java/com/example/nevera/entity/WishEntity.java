@@ -30,9 +30,20 @@ public class WishEntity {
     @Column(name = "created_at", updatable = false, nullable = false)
     private OffsetDateTime createdAt;
 
+    @Column(name = "achieved_at")
+    private OffsetDateTime achievedAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = OffsetDateTime.now();
+    }
+
+    public boolean isAchieved() {
+        return this.achievedAt != null;
+    }
+
+    public void achieve() {
+        this.achievedAt = OffsetDateTime.now();
     }
 
     public void update(String name, Long amount) {
