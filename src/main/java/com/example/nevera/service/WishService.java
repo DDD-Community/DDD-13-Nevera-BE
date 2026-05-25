@@ -86,7 +86,11 @@ public class WishService {
     }
 
     public long accumulatedAmount(WishEntity wish) {
-        return savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+        long consumed = savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
                 wish.getMember().getId(), IngredientStatus.CONSUMED, wish.getCreatedAt());
+        long wasted = savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                wish.getMember().getId(), IngredientStatus.WASTED, wish.getCreatedAt());
+        long net = consumed - wasted;
+        return Math.min(net, wish.getAmount());
     }
 }

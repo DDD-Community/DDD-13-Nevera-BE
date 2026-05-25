@@ -30,11 +30,10 @@ public class HomeService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        long totalConsumed = savingsRecordRepository.sumCostByMemberIdAndStatus(memberId, IngredientStatus.CONSUMED);
-        long totalWasted = savingsRecordRepository.sumCostByMemberIdAndStatus(memberId, IngredientStatus.WASTED);
-
         Optional<WishEntity> wishOpt = wishService.getCurrentWish(memberId);
         if (wishOpt.isEmpty()) {
+            long totalConsumed = savingsRecordRepository.sumCostByMemberIdAndStatus(memberId, IngredientStatus.CONSUMED);
+            long totalWasted = savingsRecordRepository.sumCostByMemberIdAndStatus(memberId, IngredientStatus.WASTED);
             return new HomeSummaryResponse(
                     member.getNickname(),
                     null, null, null, null, null, null,
@@ -43,13 +42,16 @@ public class HomeService {
         }
 
         WishEntity wish = wishOpt.get();
+        long totalConsumed = savingsRecordRepository.sumCostByMemberIdAndStatusFrom(memberId, IngredientStatus.CONSUMED, wish.getCreatedAt());
+        long totalWasted = savingsRecordRepository.sumCostByMemberIdAndStatusFrom(memberId, IngredientStatus.WASTED, wish.getCreatedAt());
+
         long accumulated = wishService.accumulatedAmount(wish);
 
         if (!wish.isAchieved() && accumulated >= wish.getAmount()) {
             wish.achieve();
         }
 
-        long remaining = Math.max(0L, wish.getAmount() - accumulated);
+        long remaining = wish.getAmount() - accumulated;
 
         return new HomeSummaryResponse(
                 member.getNickname(),

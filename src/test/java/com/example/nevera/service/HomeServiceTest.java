@@ -66,13 +66,13 @@ class HomeServiceTest {
     }
 
     @Test
-    @DisplayName("wish 있을 때 홈 요약 - 누적/남은 금액 계산 포함")
+    @DisplayName("wish 있을 때 홈 요약 - 누적/남은 금액 계산 포함, totalConsumed/Wasted는 wish createdAt 기준")
     void getHomeSummary_withWish() {
         WishEntity wish = wishEntity("노트북", 1_500_000L);
         given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member("테스터")));
-        given(savingsRecordRepository.sumCostByMemberIdAndStatus(MEMBER_ID, IngredientStatus.CONSUMED)).willReturn(200_000L);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatus(MEMBER_ID, IngredientStatus.WASTED)).willReturn(50_000L);
         given(wishService.getCurrentWish(MEMBER_ID)).willReturn(Optional.of(wish));
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any())).willReturn(200_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(eq(MEMBER_ID), eq(IngredientStatus.WASTED), any())).willReturn(50_000L);
         given(wishService.accumulatedAmount(wish)).willReturn(300_000L);
 
         HomeSummaryResponse result = homeService.getHomeSummary(MEMBER_ID);
@@ -88,16 +88,17 @@ class HomeServiceTest {
     }
 
     @Test
-    @DisplayName("누적 금액이 목표 금액 초과 시 remaining은 0")
-    void getHomeSummary_remainingIsZeroWhenOverAchieved() {
+    @DisplayName("달성 금액이 목표 금액과 같을 때 remaining은 0")
+    void getHomeSummary_remainingIsZeroWhenAchieved() {
         WishEntity wish = wishEntity("노트북", 1_000_000L);
         given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member("식구")));
-        given(savingsRecordRepository.sumCostByMemberIdAndStatus(eq(MEMBER_ID), any())).willReturn(0L);
         given(wishService.getCurrentWish(MEMBER_ID)).willReturn(Optional.of(wish));
-        given(wishService.accumulatedAmount(wish)).willReturn(1_200_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(eq(MEMBER_ID), any(), any())).willReturn(0L);
+        given(wishService.accumulatedAmount(wish)).willReturn(1_000_000L);
 
         HomeSummaryResponse result = homeService.getHomeSummary(MEMBER_ID);
 
         assertThat(result.remaining()).isEqualTo(0L);
+        assertThat(result.achieved()).isTrue();
     }
 }

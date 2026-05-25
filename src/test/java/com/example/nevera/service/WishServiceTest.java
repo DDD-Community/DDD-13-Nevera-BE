@@ -138,12 +138,14 @@ class WishServiceTest {
     }
 
     @Test
-    @DisplayName("수정 후 누적 금액이 목표 금액 이상이면 달성 처리된다")
+    @DisplayName("수정 후 구조-폐기 순액이 목표 금액 이상이면 달성 처리된다")
     void update_achievesWhenAccumulatedReachesAmount() {
         WishEntity wish = wishEntityWithCreatedAt("노트북", 1_000_000L);
         given(wishRepository.findById(1L)).willReturn(Optional.of(wish));
         given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
-                any(), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class))).willReturn(1_000_000L);
+                any(), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class))).willReturn(1_100_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                any(), eq(IngredientStatus.WASTED), any(OffsetDateTime.class))).willReturn(100_000L);
 
         wishService.update(MEMBER_ID, 1L, new WishRequest("노트북", 1_000_000L));
 
@@ -151,12 +153,14 @@ class WishServiceTest {
     }
 
     @Test
-    @DisplayName("수정 후 누적 금액이 목표 금액 미만이면 달성 처리되지 않는다")
+    @DisplayName("수정 후 구조-폐기 순액이 목표 금액 미만이면 달성 처리되지 않는다")
     void update_notAchievedWhenAccumulatedBelowAmount() {
         WishEntity wish = wishEntityWithCreatedAt("노트북", 1_500_000L);
         given(wishRepository.findById(1L)).willReturn(Optional.of(wish));
         given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
-                any(), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class))).willReturn(500_000L);
+                any(), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class))).willReturn(700_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                any(), eq(IngredientStatus.WASTED), any(OffsetDateTime.class))).willReturn(200_000L);
 
         wishService.update(MEMBER_ID, 1L, new WishRequest("노트북", 1_500_000L));
 
