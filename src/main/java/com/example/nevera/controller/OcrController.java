@@ -1,6 +1,8 @@
 package com.example.nevera.controller;
 
 
+import com.example.nevera.common.exception.BusinessException;
+import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.common.response.ApiResponse;
 import com.example.nevera.dto.inventory.OcrRefineResponse;
 import com.example.nevera.service.LlmService;
@@ -30,6 +32,10 @@ public class OcrController {
     @PostMapping(value = "/extract", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<List<OcrRefineResponse>> extract(
             @RequestPart("file") MultipartFile file) {
+
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new BusinessException(ErrorCode.FILE_SIZE_EXCEEDED);
+        }
 
         List<String> rawTexts = ocrService.extractTextFromImage(file);
         List<OcrRefineResponse> refined = llmService.refineIngredientData(rawTexts);
