@@ -1,8 +1,8 @@
 package com.example.nevera.controller;
 
 import com.example.nevera.common.response.ApiResponse;
+import com.example.nevera.dto.home.HomeSummaryResponse;
 import com.example.nevera.dto.inventory.ConsumedWastedResponse;
-import com.example.nevera.dto.savings.MainSummaryResponse;
 import com.example.nevera.dto.wish.WishRequest;
 import com.example.nevera.dto.wish.WishResponse;
 import com.example.nevera.service.HomeService;
@@ -16,9 +16,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Locale;
-
 import java.util.List;
+import java.util.Locale;
 
 @Tag(name = "Savings", description = "절약/폐기 금액 조회 API")
 @RestController
@@ -31,20 +30,12 @@ public class HomeController {
     private final WishService wishService;
     private final MessageSource messageSource;
 
-    @Operation(summary = "이번 주 메인 요약 조회", description = "이번 주 절감액, 현재 목표 금액 조회 (절감액 = 소비 금액 - 폐기 금액)")
-    @GetMapping("/summary/week")
-    public ApiResponse<MainSummaryResponse> getWeeklySummary(
+    @Operation(summary = "홈 화면 요약 조회", description = "닉네임, 위시 정보(누적 금액, 남은 금액, 달성 여부), 전체 구조/폐기 금액 조회")
+    @GetMapping("/home")
+    public ApiResponse<HomeSummaryResponse> getHomeSummary(
             @AuthenticationPrincipal Long memberId
     ) {
-        return ApiResponse.success(savingsService.getWeeklySummary(memberId));
-    }
-
-    @Operation(summary = "이번 달 메인 요약 조회", description = "이번 달 절감액, 현재 목표 금액 조회 (절감액 = 소비 금액 - 폐기 금액)")
-    @GetMapping("/summary/month")
-    public ApiResponse<MainSummaryResponse> getMonthlySummary(
-            @AuthenticationPrincipal Long memberId
-    ) {
-        return ApiResponse.success(savingsService.getMonthlySummary(memberId));
+        return ApiResponse.success(savingsService.getHomeSummary(memberId));
     }
 
     @Operation(summary = "소비 완료 목록 조회 (무한스크롤)", description = "offset, limit으로 페이징. 기본값: offset=0, limit=20")
@@ -52,7 +43,7 @@ public class HomeController {
     public ApiResponse<List<ConsumedWastedResponse>> getConsumed(
             @AuthenticationPrincipal Long memberId,
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int limit
+            @RequestParam(defaultValue = "10") int limit
     ) {
         return ApiResponse.success(savingsService.getConsumed(memberId, offset, limit));
     }
@@ -62,7 +53,7 @@ public class HomeController {
     public ApiResponse<List<ConsumedWastedResponse>> getWasted(
             @AuthenticationPrincipal Long memberId,
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int limit
+            @RequestParam(defaultValue = "10") int limit
     ) {
         return ApiResponse.success(savingsService.getWasted(memberId, offset, limit));
     }
@@ -76,7 +67,7 @@ public class HomeController {
         return ApiResponse.success(wishService.register(memberId, request));
     }
 
-    @Operation(summary = "목표 수정")
+    @Operation(summary = "목표 수정", description = "달성된 목표는 수정할 수 없습니다.")
     @PutMapping("/wish/{wishId}")
     public ApiResponse<WishResponse> updateWish(
             @AuthenticationPrincipal Long memberId,

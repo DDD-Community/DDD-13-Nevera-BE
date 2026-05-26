@@ -28,4 +28,17 @@ public interface SavingsRecordRepository extends JpaRepository<SavingsRecord, Lo
             @Param("from") OffsetDateTime from,
             @Param("to") OffsetDateTime to
     );
+
+    @Query("SELECT COALESCE(SUM(s.inventory.cost), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status AND s.recordedAt >= :from")
+    long sumCostByMemberIdAndStatusFrom(
+            @Param("memberId") Long memberId,
+            @Param("status") IngredientStatus status,
+            @Param("from") OffsetDateTime from
+    );
+
+    @Query("SELECT COALESCE(SUM(s.inventory.cost), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status")
+    long sumCostByMemberIdAndStatus(
+            @Param("memberId") Long memberId,
+            @Param("status") IngredientStatus status
+    );
 }
