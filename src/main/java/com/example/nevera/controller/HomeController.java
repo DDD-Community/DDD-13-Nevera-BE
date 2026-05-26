@@ -43,7 +43,7 @@ public class HomeController {
     public ApiResponse<List<ConsumedWastedResponse>> getConsumed(
             @AuthenticationPrincipal Long memberId,
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int limit
+            @RequestParam(defaultValue = "10") int limit
     ) {
         return ApiResponse.success(savingsService.getConsumed(memberId, offset, limit));
     }
@@ -53,7 +53,7 @@ public class HomeController {
     public ApiResponse<List<ConsumedWastedResponse>> getWasted(
             @AuthenticationPrincipal Long memberId,
             @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "20") int limit
+            @RequestParam(defaultValue = "10") int limit
     ) {
         return ApiResponse.success(savingsService.getWasted(memberId, offset, limit));
     }
