@@ -1,8 +1,10 @@
 package com.example.nevera.service;
 
 import com.example.nevera.common.enums.IngredientStatus;
-import com.example.nevera.dto.savings.MainSummaryResponse;
-import com.example.nevera.dto.wish.WishResponse;
+import com.example.nevera.dto.home.HomeSummaryResponse;
+import com.example.nevera.entity.Member;
+import com.example.nevera.entity.WishEntity;
+import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.repository.SavingsRecordRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,132 +29,76 @@ class HomeServiceTest {
     @Mock
     private WishService wishService;
 
+    @Mock
+    private MemberRepository memberRepository;
+
     @InjectMocks
     private HomeService homeService;
 
     private static final Long MEMBER_ID = 1L;
 
-    // ── wish 없을 때 ──────────────────────────────────────────────────────────
+    private Member member(String nickname) {
+        return Member.builder().id(MEMBER_ID).email("test@test.com").nickname(nickname).build();
+    }
 
-    @Test
-    @DisplayName("wish 없을 때 주간 요약 조회 - wish는 null, 절감액은 0")
-    void getWeeklySummary_noWish() {
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any())).willReturn(0);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(), any())).willReturn(0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.empty());
-
-        MainSummaryResponse result = homeService.getWeeklySummary(MEMBER_ID);
-
-        assertThat(result.netSavings()).isEqualTo(0);
-        assertThat(result.changePercent()).isEqualTo(0);
-        assertThat(result.wish()).isNull();
+    private WishEntity wishEntity(String name, long amount) {
+        Member m = member("식구");
+        WishEntity wish = WishEntity.builder().member(m).name(name).amount(amount).build();
+        wish.prePersist();
+        return wish;
     }
 
     @Test
-    @DisplayName("wish 없을 때 월간 요약 조회 - wish는 null, 절감액은 0")
-    void getMonthlySummary_noWish() {
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any())).willReturn(0);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(), any())).willReturn(0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.empty());
+    @DisplayName("wish 없을 때 홈 요약 - wish 관련 필드는 null")
+    void getHomeSummary_noWish() {
+        given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member("식구")));
+        given(savingsRecordRepository.sumCostByMemberIdAndStatus(MEMBER_ID, IngredientStatus.CONSUMED)).willReturn(0L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatus(MEMBER_ID, IngredientStatus.WASTED)).willReturn(0L);
+        given(wishService.getCurrentWish(MEMBER_ID)).willReturn(Optional.empty());
 
-        MainSummaryResponse result = homeService.getMonthlySummary(MEMBER_ID);
+        HomeSummaryResponse result = homeService.getHomeSummary(MEMBER_ID);
 
-        assertThat(result.netSavings()).isEqualTo(0);
-        assertThat(result.changePercent()).isEqualTo(0);
-        assertThat(result.wish()).isNull();
-    }
-
-    // ── wish 있을 때 ──────────────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("wish 있을 때 주간 요약 조회 - wish 정보가 포함된다")
-    void getWeeklySummary_withWish() {
-        WishResponse wish = new WishResponse(1L, "노트북", 1_500_000L);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any())).willReturn(0);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(), any())).willReturn(0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.of(wish));
-
-        MainSummaryResponse result = homeService.getWeeklySummary(MEMBER_ID);
-
-        assertThat(result.wish()).isNotNull();
-        assertThat(result.wish().name()).isEqualTo("노트북");
-        assertThat(result.wish().amount()).isEqualTo(1_500_000);
+        assertThat(result.nickname()).isEqualTo("식구");
+        assertThat(result.wishId()).isNull();
+        assertThat(result.accumulated()).isNull();
+        assertThat(result.totalConsumed()).isEqualTo(0L);
+        assertThat(result.totalWasted()).isEqualTo(0L);
     }
 
     @Test
-    @DisplayName("wish 있을 때 월간 요약 조회 - wish 정보가 포함된다")
-    void getMonthlySummary_withWish() {
-        WishResponse wish = new WishResponse(1L, "노트북", 1_500_000L);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any())).willReturn(0);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(), any())).willReturn(0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.of(wish));
+    @DisplayName("wish 있을 때 홈 요약 - 누적/남은 금액 계산 포함, totalConsumed/Wasted는 wish createdAt 기준")
+    void getHomeSummary_withWish() {
+        WishEntity wish = wishEntity("노트북", 1_500_000L);
+        given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member("테스터")));
+        given(wishService.getCurrentWish(MEMBER_ID)).willReturn(Optional.of(wish));
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any())).willReturn(200_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(eq(MEMBER_ID), eq(IngredientStatus.WASTED), any())).willReturn(50_000L);
+        given(wishService.accumulatedAmount(wish)).willReturn(300_000L);
 
-        MainSummaryResponse result = homeService.getMonthlySummary(MEMBER_ID);
+        HomeSummaryResponse result = homeService.getHomeSummary(MEMBER_ID);
 
-        assertThat(result.wish()).isNotNull();
-        assertThat(result.wish().name()).isEqualTo("노트북");
-        assertThat(result.wish().amount()).isEqualTo(1_500_000);
-    }
-
-    // ── 절감액 및 변화율 계산 ──────────────────────────────────────────────────
-
-    @Test
-    @DisplayName("이전 기간 데이터 없으면 changePercent는 0")
-    void changePercent_previousIsZero() {
-        // 이번 주 consumed=10000, wasted=0 / 지난 주 둘 다 0
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class), any(OffsetDateTime.class)))
-                .willReturn(10_000, 0);  // 이번주, 지난주 순서
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(OffsetDateTime.class), any(OffsetDateTime.class)))
-                .willReturn(0, 0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.empty());
-
-        MainSummaryResponse result = homeService.getWeeklySummary(MEMBER_ID);
-
-        assertThat(result.changePercent()).isEqualTo(0);
+        assertThat(result.nickname()).isEqualTo("테스터");
+        assertThat(result.wishName()).isEqualTo("노트북");
+        assertThat(result.wishAmount()).isEqualTo(1_500_000L);
+        assertThat(result.accumulated()).isEqualTo(300_000L);
+        assertThat(result.remaining()).isEqualTo(1_200_000L);
+        assertThat(result.achieved()).isFalse();
+        assertThat(result.totalConsumed()).isEqualTo(200_000L);
+        assertThat(result.totalWasted()).isEqualTo(50_000L);
     }
 
     @Test
-    @DisplayName("절감액 증가 시 양수 changePercent 반환 - 이전 10000 → 현재 12000이면 20%")
-    void changePercent_positive() {
-        // consumed 호출 순서: 이번주, 지난주, 이번주(wasted), 지난주(wasted)
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any()))
-                .willReturn(12_000, 10_000);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(), any()))
-                .willReturn(0, 0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.empty());
+    @DisplayName("달성 금액이 목표 금액과 같을 때 remaining은 0")
+    void getHomeSummary_remainingIsZeroWhenAchieved() {
+        WishEntity wish = wishEntity("노트북", 1_000_000L);
+        given(memberRepository.findById(MEMBER_ID)).willReturn(Optional.of(member("식구")));
+        given(wishService.getCurrentWish(MEMBER_ID)).willReturn(Optional.of(wish));
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(eq(MEMBER_ID), any(), any())).willReturn(0L);
+        given(wishService.accumulatedAmount(wish)).willReturn(1_000_000L);
 
-        MainSummaryResponse result = homeService.getWeeklySummary(MEMBER_ID);
+        HomeSummaryResponse result = homeService.getHomeSummary(MEMBER_ID);
 
-        assertThat(result.netSavings()).isEqualTo(12_000);
-        assertThat(result.changePercent()).isEqualTo(20);
-    }
-
-    @Test
-    @DisplayName("절감액 감소 시 음수 changePercent 반환 - 이전 10000 → 현재 8000이면 -20%")
-    void changePercent_negative() {
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.CONSUMED), any(), any()))
-                .willReturn(8_000, 10_000);
-        given(savingsRecordRepository.sumCostByMemberIdAndStatusAndPeriod(
-                eq(MEMBER_ID), eq(IngredientStatus.WASTED), any(), any()))
-                .willReturn(0, 0);
-        given(wishService.getCurrent(MEMBER_ID)).willReturn(Optional.empty());
-
-        MainSummaryResponse result = homeService.getWeeklySummary(MEMBER_ID);
-
-        assertThat(result.netSavings()).isEqualTo(8_000);
-        assertThat(result.changePercent()).isEqualTo(-20);
+        assertThat(result.remaining()).isEqualTo(0L);
+        assertThat(result.achieved()).isTrue();
     }
 }

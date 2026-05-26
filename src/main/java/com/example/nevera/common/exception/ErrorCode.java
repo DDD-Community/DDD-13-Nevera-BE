@@ -39,6 +39,7 @@ public enum ErrorCode {
 
     WISH_NOT_FOUND(404, 4051, "error.wish.wish_not_found"),
     WISH_FORBIDDEN(403, 4052, "error.wish.wish_forbidden"),
+    WISH_ALREADY_ACHIEVED(400, 4053, "error.wish.wish_already_achieved"),
 
     INVALID_NOTIFICATION_MINUTE(400, 4081, "error.mypage.invalid_notification_minute"),
 
