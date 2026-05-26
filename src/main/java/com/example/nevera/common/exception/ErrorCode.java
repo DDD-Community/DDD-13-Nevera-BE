@@ -22,11 +22,11 @@ public enum ErrorCode {
 
     MEMBER_NOT_FOUND(404, 2041, "error.member.member_not_found"),
 
-    OCR_PROCESS_ERROR(500, 3001, "error.ocr.process_error"),
-    INVALID_IMAGE_FORMAT(400, 3002, "error.ocr.invalid_image_format"),
-    GOOGLE_VISION_API_ERROR(500, 3003, "error.ocr.google_vision_api_error"),
-    EMPTY_IMAGE_FILE(400, 3004, "error.ocr.empty_image_file"),
-
+    OCR_PROCESS_ERROR(500, 6001, "error.ocr.process_error"),
+    INVALID_IMAGE_FORMAT(400, 6002, "error.ocr.invalid_image_format"),
+    GOOGLE_VISION_API_ERROR(500, 6003, "error.ocr.google_vision_api_error"),
+    EMPTY_IMAGE_FILE(400, 6004, "error.ocr.empty_image_file"),
+    FILE_SIZE_EXCEEDED(400, 6005, "error.ocr.file_size_exceeded"),
     LLM_GENERATE_ERROR(500, 5002, "error.llm.generate_error"),
     LLM_PARSE_ERROR(500, 5001, "error.llm.parse_error"),
 
