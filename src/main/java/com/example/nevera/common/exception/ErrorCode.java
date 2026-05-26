@@ -26,7 +26,7 @@ public enum ErrorCode {
     INVALID_IMAGE_FORMAT(400, 3002, "error.ocr.invalid_image_format"),
     GOOGLE_VISION_API_ERROR(500, 3003, "error.ocr.google_vision_api_error"),
     EMPTY_IMAGE_FILE(400, 3004, "error.ocr.empty_image_file"),
-
+    FILE_SIZE_EXCEEDED(400, 3005, "error.ocr.file_size_exceeded"),
     LLM_GENERATE_ERROR(500, 5002, "error.llm.generate_error"),
     LLM_PARSE_ERROR(500, 5001, "error.llm.parse_error"),
 
