@@ -1,22 +1,19 @@
 package com.example.nevera.controller;
 
 import com.example.nevera.common.response.ApiResponse;
-import com.example.nevera.dto.inventory.ConsumedWastedResponse;
 import com.example.nevera.dto.inventory.InventoryRequest;
-import com.example.nevera.dto.inventory.InventoryStatusRequest;
 import com.example.nevera.dto.inventory.InventoryResponse;
 import com.example.nevera.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Locale;
 
 import java.util.List;
 
@@ -25,70 +22,23 @@ import java.util.List;
 @RequestMapping("/api/v1/inventory")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
+@Validated
 public class InventoryController {
 
     private final InventoryService inventoryService;
     private final MessageSource messageSource;
 
-    @Operation(summary = "재료 등록", description = "새로운 재료 등록")
+    @Operation(summary = "재료 등록", description = "여러 재료를 한 번에 등록 (최대 100개)")
     @PostMapping
-    public ApiResponse<InventoryResponse> create(
+    public ApiResponse<Boolean> create(
             @AuthenticationPrincipal Long memberId,
-            @Valid @RequestBody InventoryRequest request
+            @Valid @RequestBody @Size(max = 100, message = "{validation.inventory.requests.max_size}") List<InventoryRequest> requests
     ) {
-        return ApiResponse.success(inventoryService.create(memberId, request));
+        inventoryService.create(memberId, requests);
+        return ApiResponse.success(true);
     }
 
-    @Operation(summary = "재료 전체 조회", description = "로그인한 사용자의 전체 Active 재료 조회")
-    @GetMapping
-    public ApiResponse<List<InventoryResponse>> getAllActive(
-            @AuthenticationPrincipal Long memberId
-    ) {
-        return ApiResponse.success(inventoryService.getAllActive(memberId));
-    }
-
-    @Operation(summary = "소비 완료 재료 조회", description = "로그인한 사용자의 소비 완료 재료 조회")
-    @GetMapping("/consumed")
-    public ApiResponse<List<InventoryResponse>> getAllConsumed(
-            @AuthenticationPrincipal Long memberId
-    ) {
-        return ApiResponse.success(inventoryService.getAllConsumed(memberId));
-    }
-
-    @Operation(summary = "폐기 재료 조회", description = "로그인한 사용자의 폐기 재료 조회")
-    @GetMapping("/wasted")
-    public ApiResponse<List<InventoryResponse>> getAllWasted(
-            @AuthenticationPrincipal Long memberId
-    ) {
-        return ApiResponse.success(inventoryService.getAllWasted(memberId));
-    }
-
-    @Operation(summary = "소비 완료 재료 요약 조회", description = "로그인한 사용자의 소비 완료 재료를 최근 수정순으로 조회 (name, dDay, location, category, quantity, unit, cost)")
-    @GetMapping("/consumed/summary")
-    public ApiResponse<List<ConsumedWastedResponse>> getConsumedSummary(
-            @AuthenticationPrincipal Long memberId
-    ) {
-        return ApiResponse.success(inventoryService.getConsumedSummary(memberId));
-    }
-
-    @Operation(summary = "폐기 재료 요약 조회", description = "로그인한 사용자의 폐기 재료를 최근 수정순으로 조회 (name, dDay, location, category, quantity, unit, cost)")
-    @GetMapping("/wasted/summary")
-    public ApiResponse<List<ConsumedWastedResponse>> getWastedSummary(
-            @AuthenticationPrincipal Long memberId
-    ) {
-        return ApiResponse.success(inventoryService.getWastedSummary(memberId));
-    }
-
-    @Operation(summary = "재료 하나 조회", description = "특정 재료 조회")
-    @GetMapping("/{inventoryId}")
-    public ApiResponse<InventoryResponse> getOne(
-            @AuthenticationPrincipal Long memberId,
-            @PathVariable Long inventoryId
-    ) {
-        return ApiResponse.success(inventoryService.getOne(memberId, inventoryId));
-    }
-
-    @Operation(summary = "재료 수정", description = "특정 재료 수정")
+    @Operation(summary = "재료 수정", description = "재료 단건 수정")
     @PutMapping("/{inventoryId}")
     public ApiResponse<InventoryResponse> update(
             @AuthenticationPrincipal Long memberId,
@@ -96,27 +46,5 @@ public class InventoryController {
             @Valid @RequestBody InventoryRequest request
     ) {
         return ApiResponse.success(inventoryService.update(memberId, inventoryId, request));
-    }
-
-    //TODO: 보관 장소 변경과 재료 상태 변경 시 각각의 response 값.
-    @Operation(summary = "재료 상태 변경", description = "특정 재료의 상태를 변경 (ACTIVE / CONSUMED / WASTED)")
-    @PatchMapping("/{inventoryId}/status")
-    public ApiResponse<InventoryResponse> updateStatus(
-            @AuthenticationPrincipal Long memberId,
-            @PathVariable Long inventoryId,
-            @Valid @RequestBody InventoryStatusRequest request
-    ) {
-        return ApiResponse.success(inventoryService.updateStatus(memberId, inventoryId, request));
-    }
-
-    @Operation(summary = "재료 삭제", description = "특정 재료 삭제")
-    @DeleteMapping("/{inventoryId}")
-    public ApiResponse<?> delete(
-            @AuthenticationPrincipal Long memberId,
-            @PathVariable Long inventoryId
-    ) {
-        inventoryService.delete(memberId, inventoryId);
-        return ApiResponse.success(new ApiResponse.SuccessBody(
-                messageSource.getMessage("success.inventory.deleted", null, Locale.KOREAN)));
     }
 }

@@ -2,7 +2,6 @@ package com.example.nevera.dto.inventory;
 
 import com.example.nevera.common.enums.Category;
 import com.example.nevera.common.enums.IngredientStatus;
-import com.example.nevera.common.enums.IngredientUnit;
 import com.example.nevera.common.enums.StorageLocation;
 import com.example.nevera.entity.Inventory;
 
@@ -14,9 +13,7 @@ public record InventoryResponse(
         Category category,
         StorageLocation location,
         int quantity,
-        IngredientUnit unit,
         OffsetDateTime expirationDate,
-        OffsetDateTime useBy,
         IngredientStatus status,
         int cost,
         OffsetDateTime createdAt
@@ -28,9 +25,7 @@ public record InventoryResponse(
                 inventory.getCategory(),
                 inventory.getLocation(),
                 inventory.getQuantity(),
-                inventory.getUnit(),
                 inventory.getExpirationDate(),
-                inventory.getUseBy(),
                 inventory.getStatus(),
                 inventory.getCost(),
                 inventory.getCreatedAt()
