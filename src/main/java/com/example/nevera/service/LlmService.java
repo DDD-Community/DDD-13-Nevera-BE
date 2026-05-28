@@ -55,16 +55,15 @@ public class LlmService {
                 - category: [%s] 중 택1
                 - location: [%s] 중 택1
                 - quantity: 숫자만 (불명확하면 1)
-                - unit: [%s] 중 택1
                 - cost: 최종 금액 숫자만 (할인가 적용된 금액)
                 - 식재료가 아닌 항목(배송비, 쿠폰, 포인트 등)은 제외
                 
                 출력 예시:
-                [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"unit":"EA","cost":1500}]
+                [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"cost":1500}]
                 
                 텍스트: %s
                 """,
-                categoryList, locationList, unitList,
+                categoryList, locationList,
                 String.join(", ", rawTexts)
         );
 
