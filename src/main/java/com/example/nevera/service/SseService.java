@@ -1,6 +1,7 @@
 package com.example.nevera.service;
 
 
+import com.example.nevera.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -30,7 +31,7 @@ public class SseService {
             try {
                 emitter.send(SseEmitter.event()
                         .name("progress")
-                        .data(progress));
+                        .data(ApiResponse.success(Map.of("progress", progress))));
                 if (progress == 100) emitter.complete();
             } catch (IOException e) {
                 emitters.remove(jobId);
