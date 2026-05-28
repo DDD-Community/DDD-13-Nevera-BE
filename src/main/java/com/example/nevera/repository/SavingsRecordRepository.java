@@ -12,8 +12,6 @@ import java.util.List;
 
 public interface SavingsRecordRepository extends JpaRepository<SavingsRecord, Long> {
 
-    void deleteByInventoryId(Long inventoryId);
-
     @Query("SELECT s FROM SavingsRecord s JOIN FETCH s.inventory WHERE s.member.id = :memberId AND s.status = :status ORDER BY s.recordedAt DESC")
     List<SavingsRecord> findByMemberIdAndStatus(
             @Param("memberId") Long memberId,
