@@ -52,19 +52,18 @@ public class LlmService {
                 
                 규칙:
                 - name: 핵심 재료명 (브랜드 제거, 예: "CJ 두부" → "두부")
-                - category: [%s] 중 택1
+                - category: [%s] 중 택1, 애매하거나 분류 불가능한 경우 ETC 선택
                 - location: [%s] 중 택1
                 - quantity: 숫자만 (불명확하면 1)
-                - unit: [%s] 중 택1
                 - cost: 최종 금액 숫자만 (할인가 적용된 금액)
                 - 식재료가 아닌 항목(배송비, 쿠폰, 포인트 등)은 제외
                 
                 출력 예시:
-                [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"unit":"EA","cost":1500}]
+                [{"name":"두부","category":"TOFU","location":"FRIDGE","quantity":1,"cost":1500}]
                 
                 텍스트: %s
                 """,
-                categoryList, locationList, unitList,
+                categoryList, locationList,
                 String.join(", ", rawTexts)
         );
 

@@ -1,5 +1,6 @@
 package com.example.nevera.service;
 
+import com.example.nevera.common.enums.IngredientStatus;
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.dto.wish.WishRequest;
@@ -7,6 +8,7 @@ import com.example.nevera.dto.wish.WishResponse;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.WishEntity;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.repository.SavingsRecordRepository;
 import com.example.nevera.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class WishService {
 
     private final WishRepository wishRepository;
     private final MemberRepository memberRepository;
+    private final SavingsRecordRepository savingsRecordRepository;
 
     @Transactional
     public WishResponse register(Long memberId, WishRequest request) {
@@ -38,9 +41,13 @@ public class WishService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<WishEntity> getCurrentWish(Long memberId) {
+        return wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<WishResponse> getCurrent(Long memberId) {
-        return wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId)
-                .map(WishResponse::from);
+        return getCurrentWish(memberId).map(WishResponse::from);
     }
 
     @Transactional
@@ -52,7 +59,17 @@ public class WishService {
             throw new BusinessException(ErrorCode.WISH_FORBIDDEN);
         }
 
+        if (wish.isAchieved()) {
+            throw new BusinessException(ErrorCode.WISH_ALREADY_ACHIEVED);
+        }
+
         wish.update(request.name(), request.amount());
+
+        long accumulated = accumulatedAmount(wish);
+        if (accumulated >= wish.getAmount()) {
+            wish.achieve();
+        }
+
         return WishResponse.from(wish);
     }
 
@@ -66,5 +83,14 @@ public class WishService {
         }
 
         wishRepository.delete(wish);
+    }
+
+    public long accumulatedAmount(WishEntity wish) {
+        long consumed = savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                wish.getMember().getId(), IngredientStatus.CONSUMED, wish.getCreatedAt());
+        long wasted = savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                wish.getMember().getId(), IngredientStatus.WASTED, wish.getCreatedAt());
+        long net = consumed - wasted;
+        return Math.min(net, wish.getAmount());
     }
 }

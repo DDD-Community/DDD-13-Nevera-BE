@@ -8,6 +8,12 @@ spring:
             model: gemini-2.5-flash
             temperature: 0.1
             thinking-budget: 0
+
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+
   application:
     name: nevera
   config:

@@ -1,11 +1,14 @@
 package com.example.nevera.service;
 
+import com.example.nevera.common.enums.IngredientStatus;
 import com.example.nevera.common.exception.BusinessException;
+import com.example.nevera.common.exception.ErrorCode;
 import com.example.nevera.dto.wish.WishRequest;
 import com.example.nevera.dto.wish.WishResponse;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.WishEntity;
 import com.example.nevera.repository.MemberRepository;
+import com.example.nevera.repository.SavingsRecordRepository;
 import com.example.nevera.repository.WishRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,11 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,17 +37,26 @@ class WishServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
+    @Mock
+    private SavingsRecordRepository savingsRecordRepository;
+
     @InjectMocks
     private WishService wishService;
 
     private static final Long MEMBER_ID = 1L;
 
     private Member member() {
-        return Member.builder().email("test@test.com").build();
+        return Member.builder().id(MEMBER_ID).email("test@test.com").build();
     }
 
     private WishEntity wishEntity(String name, long amount) {
         return WishEntity.builder().member(member()).name(name).amount(amount).build();
+    }
+
+    private WishEntity wishEntityWithCreatedAt(String name, long amount) {
+        WishEntity wish = WishEntity.builder().member(member()).name(name).amount(amount).build();
+        wish.prePersist();
+        return wish;
     }
 
     // ── wish 등록 ─────────────────────────────────────────────────────────────
@@ -106,5 +120,50 @@ class WishServiceTest {
         assertThat(result).isPresent();
         assertThat(result.get().name()).isEqualTo("노트북");
         assertThat(result.get().amount()).isEqualTo(1_500_000L);
+    }
+
+    // ── wish 수정 ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("달성된 wish는 수정할 수 없다")
+    void update_alreadyAchieved() {
+        WishEntity achievedWish = wishEntityWithCreatedAt("노트북", 1_500_000L);
+        achievedWish.achieve();
+        given(wishRepository.findById(1L)).willReturn(Optional.of(achievedWish));
+
+        assertThatThrownBy(() -> wishService.update(MEMBER_ID, 1L, new WishRequest("노트북", 2_000_000L)))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.WISH_ALREADY_ACHIEVED);
+    }
+
+    @Test
+    @DisplayName("수정 후 구조-폐기 순액이 목표 금액 이상이면 달성 처리된다")
+    void update_achievesWhenAccumulatedReachesAmount() {
+        WishEntity wish = wishEntityWithCreatedAt("노트북", 1_000_000L);
+        given(wishRepository.findById(1L)).willReturn(Optional.of(wish));
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                any(), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class))).willReturn(1_100_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                any(), eq(IngredientStatus.WASTED), any(OffsetDateTime.class))).willReturn(100_000L);
+
+        wishService.update(MEMBER_ID, 1L, new WishRequest("노트북", 1_000_000L));
+
+        assertThat(wish.isAchieved()).isTrue();
+    }
+
+    @Test
+    @DisplayName("수정 후 구조-폐기 순액이 목표 금액 미만이면 달성 처리되지 않는다")
+    void update_notAchievedWhenAccumulatedBelowAmount() {
+        WishEntity wish = wishEntityWithCreatedAt("노트북", 1_500_000L);
+        given(wishRepository.findById(1L)).willReturn(Optional.of(wish));
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                any(), eq(IngredientStatus.CONSUMED), any(OffsetDateTime.class))).willReturn(700_000L);
+        given(savingsRecordRepository.sumCostByMemberIdAndStatusFrom(
+                any(), eq(IngredientStatus.WASTED), any(OffsetDateTime.class))).willReturn(200_000L);
+
+        wishService.update(MEMBER_ID, 1L, new WishRequest("노트북", 1_500_000L));
+
+        assertThat(wish.isAchieved()).isFalse();
     }
 }
