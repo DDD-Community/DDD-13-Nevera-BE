@@ -9,7 +9,6 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableAsync
 public class NeveraApplication {
 
 	public static void main(String[] args) {
