@@ -11,13 +11,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-@RequiredArgsConstructor
 public class SseService {
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter createEmitter(String jobId) {
-        SseEmitter emitter = new SseEmitter(180_000L); // 3분 타임아웃
+        SseEmitter emitter = new SseEmitter(180_000L);
         emitters.put(jobId, emitter);
         emitter.onCompletion(() -> emitters.remove(jobId));
         emitter.onTimeout(() -> emitters.remove(jobId));
@@ -25,13 +24,15 @@ public class SseService {
         return emitter;
     }
 
-    public void send(String jobId, int progress) {
+    public void send(String jobId, int progress, Object result) {
         SseEmitter emitter = emitters.get(jobId);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event()
                         .name("progress")
-                        .data(ApiResponse.success(Map.of("progress", progress))));
+                        .data(ApiResponse.success(
+                                Map.of("progress", progress, "result", result == null ? "" : result)
+                        )));
                 if (progress == 100) emitter.complete();
             } catch (IOException e) {
                 emitters.remove(jobId);

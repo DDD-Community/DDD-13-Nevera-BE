@@ -27,6 +27,8 @@ public enum ErrorCode {
     GOOGLE_VISION_API_ERROR(500, 6003, "error.ocr.google_vision_api_error"),
     EMPTY_IMAGE_FILE(400, 6004, "error.ocr.empty_image_file"),
     FILE_SIZE_EXCEEDED(400, 6005, "error.ocr.file_size_exceeded"),
+    INVALID_JOB_ID(400, 6006, "error.ocr.invalid_job_id"),
+    FILE_READ_ERROR(500, 6007, "error.ocr.file_read_error"),
     LLM_GENERATE_ERROR(500, 5002, "error.llm.generate_error"),
     LLM_PARSE_ERROR(500, 5001, "error.llm.parse_error"),
 
