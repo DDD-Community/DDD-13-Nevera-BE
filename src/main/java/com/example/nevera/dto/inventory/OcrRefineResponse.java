@@ -9,6 +9,6 @@ public record OcrRefineResponse(
         Category category,
         StorageLocation location,
         Integer quantity,
-        IngredientUnit unit,
-        Integer cost
+        Integer cost,
+        String expirationDate
 ) {}
