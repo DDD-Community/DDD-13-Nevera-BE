@@ -12,16 +12,11 @@ public record SignupRequest(
         String email,
 
         @NotBlank(message = "{validation.auth.password.not_blank}")
-        @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}",
+        @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,20}",
                 message = "{validation.auth.password.pattern}")
         String password,
 
-
-
-        @NotBlank(message = "이름은 필수 입력입니다.")
-
         @NotBlank(message = "{validation.auth.name.not_blank}")
-
         String name
 ) {
 

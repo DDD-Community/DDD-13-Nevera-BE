@@ -59,7 +59,7 @@ class MemberServiceTest {
         SignupRequest request = new SignupRequest(
 
 
-                "test@example.com", "password123", "테스터"
+                "test@example.com", "Password123!", "테스터"
 
         );
 
@@ -76,7 +76,7 @@ class MemberServiceTest {
     void signup_UnverifiedEmail() {
         // Given (준비)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "테스터"
+                "test@example.com", "Password123!", "테스터"
         );
 
         // 데이터는 있지만, 아직 인증(isVerified)이 안 된 상태의 객체
@@ -94,7 +94,7 @@ class MemberServiceTest {
     void signup_Success() {
         // Given (준비)
         SignupRequest request = new SignupRequest(
-                "test@example.com", "password123", "테스터"
+                "test@example.com", "Password123!", "테스터"
         );
 
         // 1. 인증이 완료된 완벽한 상태 만들기
@@ -122,7 +122,7 @@ class MemberServiceTest {
     @DisplayName("로그인 성공 테스트 - 비밀번호가 일치하면 토큰을 반환한다")
     void login_success() {
         // given (준비)
-        LoginRequest request = new LoginRequest("test@test.com", "rawPassword");
+        LoginRequest request = new LoginRequest("test@test.com", "RawPassword1!");
         Member member = Member.builder()
                 .email("test@test.com")
                 .password("encodedPassword")
@@ -132,7 +132,7 @@ class MemberServiceTest {
 
         // 가짜 동작 정의 (Mocking)
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(member));
-        given(passwordEncoder.matches("rawPassword", "encodedPassword")).willReturn(true);
+        given(passwordEncoder.matches("RawPassword1!", "encodedPassword")).willReturn(true);
         given(jwtTokenService.issueTokens(member)).willReturn(fakeTokens);
 
         // when (실행)
