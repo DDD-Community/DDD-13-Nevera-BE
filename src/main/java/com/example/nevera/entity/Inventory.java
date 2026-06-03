@@ -86,16 +86,12 @@ public class Inventory {
     }
 
     public void update(String name, Category category, StorageLocation location,
-                       int quantity, IngredientUnit unit, OffsetDateTime expirationDate,
-                       OffsetDateTime useBy, IngredientStatus status, int cost) {
+                       int quantity, OffsetDateTime expirationDate, int cost) {
         this.name = name;
         this.category = category;
         this.location = location;
         this.quantity = quantity;
-        this.unit = unit;
         this.expirationDate = expirationDate;
-        this.useBy = useBy;
-        this.status = status;
         this.cost = cost;
     }
 
