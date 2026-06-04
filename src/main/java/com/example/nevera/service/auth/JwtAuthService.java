@@ -11,7 +11,6 @@ import com.example.nevera.entity.Member;
 import com.example.nevera.entity.Token;
 import com.example.nevera.repository.EmailAuthRepository;
 import com.example.nevera.repository.FcmTokenRepository;
-import com.example.nevera.repository.InventoryRepository;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ public class JwtAuthService {
     private final EmailAuthRepository emailAuthRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
-    private final InventoryRepository inventoryRepository;
 
     public AuthTokenResponse refresh(String refreshToken) {
         jwtProvider.parseToken(refreshToken);
@@ -96,9 +94,8 @@ public class JwtAuthService {
     public void deleteAccount(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
-        tokenRepository.deleteByMember(member);
-        fcmTokenRepository.deleteByMember(member);
-        inventoryRepository.deleteAllByMemberId(memberId);
+        // member를 참조하는 자식 테이블(wish, inventory, savings_record, notification,
+        // notification_failure, token, fcm_token)은 FK ON DELETE CASCADE 로 함께 삭제된다.
         memberRepository.delete(member);
     }
 
