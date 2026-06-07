@@ -13,5 +13,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByEmail(String email);
 
-    List<Member> findAllByNotificationHourAndNotificationMinute(int notificationHour, int notificationMinute);
+    List<Member> findAllByNotificationEnabledTrueAndNotificationHourAndNotificationMinute(int notificationHour, int notificationMinute);
 }

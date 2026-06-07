@@ -46,7 +46,7 @@ public class ExpirationNotificationService {
 
         log.info("유통기한 알림 스케줄러 실행 - {}:{}", currentHour, currentMinute);
 
-        List<Member> targets = memberRepository.findAllByNotificationHourAndNotificationMinute(currentHour, currentMinute);
+        List<Member> targets = memberRepository.findAllByNotificationEnabledTrueAndNotificationHourAndNotificationMinute(currentHour, currentMinute);
         if (targets.isEmpty()) {
             return;
         }
