@@ -42,6 +42,14 @@ public class MemberService {
     }
 
     @Transactional
+    public NotificationSettingResponse updateNotificationEnabled(Long memberId, NotificationEnabledRequest request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        member.updateNotificationEnabled(request.notificationEnabled());
+        return NotificationSettingResponse.from(member);
+    }
+
+    @Transactional
     public NotificationSettingResponse updateNotificationTime(Long memberId, NotificationTimeRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));

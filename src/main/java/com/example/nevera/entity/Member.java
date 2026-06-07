@@ -51,6 +51,10 @@ public class Member {
     @Builder.Default
     private String profileImageUrl = "/images/default_profile.png";
 
+    @Column(name = "notification_enabled", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private boolean notificationEnabled = false;
+
     @Column(name = "notification_hour", nullable = false)
     @Builder.Default
     private int notificationHour = 18;
@@ -77,6 +81,10 @@ public class Member {
         }
         this.notificationHour = notificationHour;
         this.notificationMinute = notificationMinute;
+    }
+
+    public void updateNotificationEnabled(boolean notificationEnabled) {
+        this.notificationEnabled = notificationEnabled;
     }
 
     public void updateNickname(String nickname) {
