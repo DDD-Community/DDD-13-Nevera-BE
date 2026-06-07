@@ -55,6 +55,15 @@ public class MypageController {
         return ApiResponse.success(memberService.updateNickname(memberId, request));
     }
 
+    @Operation(summary = "알림 수신 여부 수정", description = "유통기한 임박 알림 수신 여부(on/off) 수정")
+    @PutMapping("/notification/enabled")
+    public ApiResponse<NotificationSettingResponse> updateNotificationEnabled(
+            @AuthenticationPrincipal Long memberId,
+            @Valid @RequestBody NotificationEnabledRequest request
+    ) {
+        return ApiResponse.success(memberService.updateNotificationEnabled(memberId, request));
+    }
+
     @Operation(summary = "알림 시간 수정", description = "유통기한 임박 알림 수신 시간(시·분) 수정")
     @PutMapping("/notification/time")
     public ApiResponse<NotificationSettingResponse> updateNotificationTime(
