@@ -7,6 +7,7 @@ import com.example.nevera.common.enums.StorageLocation;
 import com.example.nevera.common.response.ApiResponse;
 import com.example.nevera.dto.inventory.FridgeInventoryResponse;
 import com.example.nevera.dto.inventory.InventoryResponse;
+import com.example.nevera.dto.inventory.InventoryUpdateRequest;
 import com.example.nevera.service.MyFridgeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -44,34 +45,18 @@ public class MyFridgeController {
         return ApiResponse.success(response);
     }
 
-//    @Operation(summary = "식재료 수정", description = "등록된 식재료의 상세 정보를 수정합니다.")
-//    @PutMapping("/{id}")
-//    public ApiResponse<InventoryResponse> updateIngredient(
-//            @PathVariable Long id,
-//            @RequestBody @Valid IngredientUpdateRequestDto requestDto) {
-//
-//        IngredientResponseDto response = ingredientService.updateIngredient(id, requestDto);
-//        return ApiResponse.success(response);
-//    }
-//
-//    @Operation(summary = "식재료 구조 처리", description = "사용(구조)한 비율(25, 50, 75, 100)만큼 잔여 금액/수량을 차감합니다. 100% 선택 시 목록에서 삭제됩니다.")
-//    @PatchMapping("/{id}/rescue")
-//    public ApiResponse<Void> rescueIngredient(
-//            @PathVariable Long id,
-//            @RequestBody @Valid IngredientStatusChangeRequestDto requestDto) {
-//
-//        ingredientService.processRescue(id, requestDto.getPercentage());
-//        return ApiResponse.success(null);
-//    }
-//
-//    @Operation(summary = "식재료 폐기 처리", description = "버림(폐기) 처리한 비율(25, 50, 75, 100)만큼 잔여 금액/수량을 차감합니다. 100% 선택 시 목록에서 삭제됩니다.")
-//    @PatchMapping("/{id}/discard")
-//    public ApiResponse<Void> discardIngredient(
-//            @PathVariable Long id,
-//            @RequestBody @Valid IngredientStatusChangeRequestDto requestDto) {
-//
-//        ingredientService.processDiscard(id, requestDto.getPercentage());
-//        return ApiResponse.success(null);
-//    }
+    @Operation(summary = "식재료 수정", description = "등록된 식재료의 상세 정보를 수정하고, 구조/폐기 비율에 따라 금액 차감 또는 삭제 처리를 합니다.")
+    @PutMapping("/{id}")
+    public ApiResponse<InventoryResponse> updateIngredient(@PathVariable Long id,
+                                                           @RequestBody @Valid InventoryUpdateRequest requestDto) {
+
+        InventoryResponse response = myFridgeService.updateIngredient(id, requestDto);
+        if (response == null) {
+            return ApiResponse.success(null); // 혹은 기존에 쓰시는 삭제 성공 응답 양식
+        }
+
+        return ApiResponse.success(response);
+    }
+
 
 }
