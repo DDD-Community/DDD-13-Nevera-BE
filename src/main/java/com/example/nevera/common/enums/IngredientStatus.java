@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum IngredientStatus {
-    ACTIVE("활성화"),
+    ACTIVE("보관중"),
     CONSUMED("구조"),
     WASTED("폐기");
 
