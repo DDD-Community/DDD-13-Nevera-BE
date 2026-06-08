@@ -32,12 +32,14 @@ public enum ErrorCode {
     LLM_GENERATE_ERROR(500, 5002, "error.llm.generate_error"),
     LLM_PARSE_ERROR(500, 5001, "error.llm.parse_error"),
 
+
     FCM_TOKEN_NOT_FOUND(404, 2051, "error.fcm.fcm_token_not_found"),
     FCM_TOKEN_INVALID(400, 2052, "error.fcm.fcm_token_invalid"),
     FCM_SEND_ERROR(500, 2053, "error.fcm.fcm_send_error"),
 
     INVENTORY_NOT_FOUND(404, 4001, "error.inventory.inventory_not_found"),
     INVENTORY_FORBIDDEN(403, 4002, "error.inventory.inventory_forbidden"),
+    INVALID_INPUT_VALUE(400, 4002, "error.common.invalid_input_value"),
 
     WISH_NOT_FOUND(404, 4051, "error.wish.wish_not_found"),
     WISH_FORBIDDEN(403, 4052, "error.wish.wish_forbidden"),
