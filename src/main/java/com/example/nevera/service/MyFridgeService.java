@@ -36,7 +36,7 @@ public class MyFridgeService {
         int ratio = inventoryUpdateRequest.ratio();
 
         if (ratio != 0 && ratio != 25 && ratio != 50 && ratio != 75 && ratio != 100) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE); // 3002번이나 공통 파라미터 에러 코드를 던집니다.
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
         if (ratio == 100) {
             inventoryRepository.delete(inventory);
