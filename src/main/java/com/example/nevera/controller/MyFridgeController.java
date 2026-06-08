@@ -16,25 +16,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Tag(name="Fridge", description="나의 냉장고 API")
 @RestController
-@RequestMapping("/api/v1/myfridge")
+@RequestMapping("/api/v1/fridge")
 @RequiredArgsConstructor
 @SecurityRequirement(name="bearerAuth")
 public class MyFridgeController {
 
     private final MyFridgeService myFridgeService;
     @Operation(summary = "식재료 목록 조회", description = "보관방법, 카테고리, 정렬 조건에 따른 식재료 목록을 무한 스크롤로 조회합니다.")
-    @GetMapping
+    @GetMapping("/ingredients")
     public ApiResponse<Slice<FridgeInventoryResponse>> getIngredients(
             @RequestParam(required = false) StorageLocation storageLocation,
             @RequestParam(required = false) Category category,
-            @RequestParam(defaultValue = "EXPIRY_DATE ") SortType sortType,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "EXPIRY_DATE") SortType sortType,
+            @PageableDefault(page = 0, size = 20) Pageable pageable) {
         Sort sort = (sortType == SortType.LATEST)
                 ? Sort.by(Sort.Direction.DESC, "createdAt")
                 : Sort.by(Sort.Direction.ASC, "expirationDate");

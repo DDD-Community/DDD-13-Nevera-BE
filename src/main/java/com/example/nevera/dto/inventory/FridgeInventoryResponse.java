@@ -18,7 +18,6 @@ public record FridgeInventoryResponse (
     int quantity,
     OffsetDateTime expirationDate,
     int dDay,
-    IngredientStatus status,
     int cost,
     OffsetDateTime createdAt
 ) {
@@ -35,7 +34,6 @@ public record FridgeInventoryResponse (
                     inventory.getQuantity(),
                     inventory.getExpirationDate(),
                     (int) daysBetween,
-                    inventory.getStatus(),
                     inventory.getCost(),
                     inventory.getCreatedAt()
             );
