@@ -52,7 +52,7 @@ public class MyFridgeController {
 
         InventoryResponse response = myFridgeService.updateIngredient(id, requestDto);
         if (response == null) {
-            return ApiResponse.success(null); // 혹은 기존에 쓰시는 삭제 성공 응답 양식
+            return ApiResponse.success(null);
         }
 
         return ApiResponse.success(response);

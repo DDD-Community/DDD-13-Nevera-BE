@@ -96,7 +96,7 @@ public class Inventory {
         this.cost = cost;
     }
 
-    // 💡 기존에 있던 일반 수정 메서드 (그대로 두세요)
+
     public void updateDetails(InventoryUpdateRequest requestDto) {
         this.name = requestDto.name();
         this.category = requestDto.category();
