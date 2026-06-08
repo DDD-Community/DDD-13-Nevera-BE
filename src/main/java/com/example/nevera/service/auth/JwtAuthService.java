@@ -61,7 +61,6 @@ public class JwtAuthService {
         Member newMember = Member.builder()
                 .email(request.email())
                 .password(encodedPassword)
-                .name(request.name())
                 .provider("LOCAL")
                 .build();
 

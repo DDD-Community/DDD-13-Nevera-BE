@@ -14,10 +14,8 @@ public record SignupRequest(
         @NotBlank(message = "{validation.auth.password.not_blank}")
         @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,20}",
                 message = "{validation.auth.password.pattern}")
-        String password,
+        String password
 
-        @NotBlank(message = "{validation.auth.name.not_blank}")
-        String name
 ) {
 
 }
