@@ -83,3 +83,6 @@ firebase:
 terms:
   service-url: ${TERMS_OF_SERVICE_URL}
   privacy-url: ${PRIVACY_POLICY_URL}
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
