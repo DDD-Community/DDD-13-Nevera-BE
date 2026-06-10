@@ -7,6 +7,7 @@ import com.example.nevera.entity.Member;
 import com.example.nevera.repository.MemberRepository;
 import com.example.nevera.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +18,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final WishRepository wishRepository;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @Transactional(readOnly = true)
     public ProfileResponse getProfile(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         boolean hasWish = wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId).isPresent();
-        return ProfileResponse.from(member, hasWish);
+        return ProfileResponse.from(member, hasWish, baseUrl);
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +42,7 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
         member.updateNickname(request.nickname());
         boolean hasWish = wishRepository.findTopByMemberIdOrderByCreatedAtDesc(memberId).isPresent();
-        return ProfileResponse.from(member, hasWish);
+        return ProfileResponse.from(member, hasWish, baseUrl);
     }
 
     @Transactional
