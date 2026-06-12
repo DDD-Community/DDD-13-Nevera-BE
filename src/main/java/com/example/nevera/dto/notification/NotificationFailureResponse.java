@@ -1,8 +1,9 @@
 package com.example.nevera.dto.notification;
 
 import com.example.nevera.entity.NotificationFailure;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.time.format.DateTimeFormatter;
+import java.time.OffsetDateTime;
 
 public record NotificationFailureResponse(
         Long id,
@@ -11,11 +12,9 @@ public record NotificationFailureResponse(
         Long notificationId,
         String reason,
         int retryCount,
-        String failedAt
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "Asia/Seoul")
+        OffsetDateTime failedAt
 ) {
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-
     public static NotificationFailureResponse from(NotificationFailure failure) {
         return new NotificationFailureResponse(
                 failure.getId(),
@@ -24,7 +23,7 @@ public record NotificationFailureResponse(
                 failure.getNotification().getId(),
                 failure.getReason(),
                 failure.getRetryCount(),
-                failure.getFailedAt().format(FORMATTER)
+                failure.getFailedAt()
         );
     }
 }
