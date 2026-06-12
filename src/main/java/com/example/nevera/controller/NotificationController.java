@@ -50,7 +50,7 @@ public class NotificationController {
             @AuthenticationPrincipal Long memberId,
             @Valid @RequestBody FcmSendRequest request
     ) {
-        fcmService.sendNotification(memberId, request.title(), request.body());
+        fcmService.sendNotification(memberId, request.data());
         return ApiResponse.success(new ApiResponse.SuccessBody(
                 messageSource.getMessage("success.notification.sent", null, Locale.KOREAN)));
     }

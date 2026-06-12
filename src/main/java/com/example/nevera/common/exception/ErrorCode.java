@@ -36,6 +36,7 @@ public enum ErrorCode {
     FCM_TOKEN_NOT_FOUND(404, 2051, "error.fcm.fcm_token_not_found"),
     FCM_TOKEN_INVALID(400, 2052, "error.fcm.fcm_token_invalid"),
     FCM_SEND_ERROR(500, 2053, "error.fcm.fcm_send_error"),
+    NOTIFICATION_DISABLED(400, 2054, "error.fcm.notification_disabled"),
 
     INVENTORY_NOT_FOUND(404, 4001, "error.inventory.inventory_not_found"),
     INVENTORY_FORBIDDEN(403, 4002, "error.inventory.inventory_forbidden"),
