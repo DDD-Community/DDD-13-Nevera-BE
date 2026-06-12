@@ -29,6 +29,13 @@ public class MyFridgeService {
                 .map(FridgeInventoryResponse::from);
     }
 
+    @Transactional(readOnly = true)
+    public InventoryResponse getIngredientDetail(Long inventoryId) {
+        Inventory inventory = inventoryRepository.findById(inventoryId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVENTORY_NOT_FOUND));
+        return InventoryResponse.from(inventory);
+    }
+
     @Transactional
     public InventoryResponse updateIngredient(Long id, InventoryUpdateRequest inventoryUpdateRequest) {
         Inventory inventory = inventoryRepository.findById(id)
