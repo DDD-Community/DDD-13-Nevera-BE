@@ -2,6 +2,7 @@ package com.example.nevera.service;
 
 import com.example.nevera.common.exception.BusinessException;
 import com.example.nevera.common.exception.ErrorCode;
+import com.example.nevera.dto.notification.FcmSendRequest;
 import com.example.nevera.entity.FcmToken;
 import com.example.nevera.entity.Member;
 import com.example.nevera.entity.Notification;
@@ -43,21 +44,28 @@ public class FcmService {
     }
 
     @Transactional
-    public void sendNotification(Long memberId, String title, String body) {
+    public void sendNotification(Long memberId, FcmSendRequest.Data data) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if (!member.isNotificationEnabled()) {
+            throw new BusinessException(ErrorCode.NOTIFICATION_DISABLED);
+        }
 
         FcmToken fcmToken = fcmTokenRepository.findByMember(member)
                 .orElseThrow(() -> new BusinessException(ErrorCode.FCM_TOKEN_NOT_FOUND));
 
-        Message message = Message.builder()
+        Message.Builder messageBuilder = Message.builder()
                 .setToken(fcmToken.getToken())
-                .putData("title", title)
-                .putData("body", body)
-                .build();
+                .putData("title", data.title())
+                .putData("message", data.message());
+        putIfPresent(messageBuilder, "id", data.id());
+        putIfPresent(messageBuilder, "createdAt", data.createdAt());
+        putIfPresent(messageBuilder, "deeplink", data.deeplink());
+        putIfPresent(messageBuilder, "type", data.type());
 
         try {
-            FirebaseMessaging.getInstance().send(message);
+            FirebaseMessaging.getInstance().send(messageBuilder.build());
         } catch (FirebaseMessagingException e) {
             if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED) {
                 fcmTokenRepository.delete(fcmToken);
@@ -67,13 +75,19 @@ public class FcmService {
         }
     }
 
+    private void putIfPresent(Message.Builder builder, String key, String value) {
+        if (value != null) {
+            builder.putData(key, value);
+        }
+    }
+
     public void sendPushIfTokenExists(Member member, Notification notification) {
         fcmTokenRepository.findByMember(member).ifPresent(fcmToken -> {
             Message message = Message.builder()
                     .setToken(fcmToken.getToken())
                     .putData("title", notification.getTitle())
                     .putData("message", notification.getMessage())
-                    .putData("timestamp", notification.getCreatedAt().toString())
+                    .putData("createdAt", notification.getCreatedAt().toString())
                     .putData("id", notification.getId().toString())
                     .putData("deeplink", notification.getDeeplink())
                     .putData("type", "default")
