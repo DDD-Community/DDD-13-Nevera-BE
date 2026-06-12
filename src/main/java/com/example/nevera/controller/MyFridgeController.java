@@ -45,7 +45,17 @@ public class MyFridgeController {
         return ApiResponse.success(response);
     }
 
-    @Operation(summary = "식재료 수정", description = "등록된 식재료의 상세 정보를 수정하고, 구조/폐기 비율에 따라 금액 차감 또는 삭제 처리를 합니다.")
+    @Operation(summary = "식재료 상세 조회", description = "수정 화면 진입 시 식재료 ID를 기반으로 최신 상세 정보를 조회합니다.")
+    @GetMapping("/{inventoryId}")
+    public ApiResponse<InventoryResponse> getIngredientDetail(
+            @PathVariable Long inventoryId) {
+
+
+        InventoryResponse response = myFridgeService.getIngredientDetail(inventoryId);
+        return ApiResponse.success(response);
+    }
+
+    @Operation(summary = "구조 및 폐기", description = "구조/폐기 비율에 따라 금액 차감 또는 삭제 처리를 합니다.")
     @PutMapping("/{id}")
     public ApiResponse<InventoryResponse> updateIngredient(@PathVariable Long id,
                                                            @RequestBody @Valid InventoryUpdateRequest requestDto) {
