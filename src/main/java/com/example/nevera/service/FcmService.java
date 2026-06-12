@@ -79,6 +79,8 @@ public class FcmService {
                 fcmTokenRepository.delete(fcmToken);
                 throw new BusinessException(ErrorCode.FCM_TOKEN_INVALID);
             }
+            log.error("FCM 전송 실패 memberId={} errorCode={} message={}",
+                    memberId, e.getMessagingErrorCode(), e.getMessage(), e);
             throw new BusinessException(ErrorCode.FCM_SEND_ERROR);
         }
     }

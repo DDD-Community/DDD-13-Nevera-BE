@@ -32,12 +32,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
-        log.error(e.getMessage(), e);
         ErrorCode errorCode = e.getErrorCode();
+        String message = msg(errorCode.getMessageKey());
+        log.error("{}",message, e);
 
         return ResponseEntity
                 .status(errorCode.getStatus())
-                .body(ApiResponse.error(errorCode.getCode(), msg(errorCode.getMessageKey())));
+                .body(ApiResponse.error(errorCode.getCode(), message));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
