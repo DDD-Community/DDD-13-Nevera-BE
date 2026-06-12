@@ -31,11 +31,8 @@ public class MyFridgeService {
 
     @Transactional(readOnly = true)
     public InventoryResponse getIngredientDetail(Long inventoryId) {
-        // 1. ID 기반 식재료 조회 (없으면 아까 만든 4001번 커스텀 에러 던지기)
         Inventory inventory = inventoryRepository.findById(inventoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVENTORY_NOT_FOUND));
-
-        // 2. 조회한 엔티티를 화면 전용 Response DTO로 변환하여 반환
         return InventoryResponse.from(inventory);
     }
 
