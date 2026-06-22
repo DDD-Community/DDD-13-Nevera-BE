@@ -1,9 +1,9 @@
 package com.example.nevera.dto.notification;
 
 import com.example.nevera.entity.Notification;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 
 public record NotificationResponse(
         Long id,
@@ -11,11 +11,9 @@ public record NotificationResponse(
         String message,
         String deeplink,
         String type,
-        String createdAt
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "Asia/Seoul")
+        OffsetDateTime createdAt
 ) {
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-
     public static NotificationResponse from(Notification notification) {
         return new NotificationResponse(
                 notification.getId(),
@@ -23,7 +21,7 @@ public record NotificationResponse(
                 notification.getMessage(),
                 notification.getDeeplink(),
                 notification.getType(),
-                notification.getCreatedAt().format(FORMATTER)
+                notification.getCreatedAt()
         );
     }
 }

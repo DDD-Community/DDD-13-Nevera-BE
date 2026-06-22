@@ -19,10 +19,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FcmService {
+
+    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
+    private static final DateTimeFormatter CREATED_AT_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 
     private final FcmTokenRepository fcmTokenRepository;
     private final MemberRepository memberRepository;
@@ -60,7 +68,7 @@ public class FcmService {
                 .putData("title", data.title())
                 .putData("message", data.message());
         putIfPresent(messageBuilder, "id", data.id());
-        putIfPresent(messageBuilder, "createdAt", data.createdAt());
+        messageBuilder.putData("createdAt", OffsetDateTime.now(KST).format(CREATED_AT_FORMATTER));
         putIfPresent(messageBuilder, "deeplink", data.deeplink());
         putIfPresent(messageBuilder, "type", data.type());
 
@@ -87,7 +95,7 @@ public class FcmService {
                     .setToken(fcmToken.getToken())
                     .putData("title", notification.getTitle())
                     .putData("message", notification.getMessage())
-                    .putData("createdAt", notification.getCreatedAt().toString())
+                    .putData("createdAt", notification.getCreatedAt().atZoneSameInstant(KST).format(CREATED_AT_FORMATTER))
                     .putData("id", notification.getId().toString())
                     .putData("deeplink", notification.getDeeplink())
                     .putData("type", "default")
