@@ -19,7 +19,18 @@ public interface SavingsRecordRepository extends JpaRepository<SavingsRecord, Lo
             Pageable pageable
     );
 
-    @Query("SELECT COALESCE(SUM(s.inventory.cost), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status AND s.recordedAt >= :from AND s.recordedAt < :to")
+    @Query("SELECT COALESCE(SUM(s.ratio), 0) FROM SavingsRecord s WHERE s.inventory.id = :inventoryId")
+    int sumRatioByInventoryId(@Param("inventoryId") Long inventoryId);
+
+    @Query("SELECT COALESCE(SUM(s.ratio), 0) FROM SavingsRecord s WHERE s.inventory.id = :inventoryId AND s.status = :status")
+    int sumRatioByInventoryIdAndStatus(
+            @Param("inventoryId") Long inventoryId,
+            @Param("status") IngredientStatus status
+    );
+
+    boolean existsByInventoryId(Long inventoryId);
+
+    @Query("SELECT COALESCE(SUM(s.amount), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status AND s.recordedAt >= :from AND s.recordedAt < :to")
     int sumCostByMemberIdAndStatusAndPeriod(
             @Param("memberId") Long memberId,
             @Param("status") IngredientStatus status,
@@ -27,14 +38,14 @@ public interface SavingsRecordRepository extends JpaRepository<SavingsRecord, Lo
             @Param("to") OffsetDateTime to
     );
 
-    @Query("SELECT COALESCE(SUM(s.inventory.cost), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status AND s.recordedAt >= :from")
+    @Query("SELECT COALESCE(SUM(s.amount), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status AND s.recordedAt >= :from")
     long sumCostByMemberIdAndStatusFrom(
             @Param("memberId") Long memberId,
             @Param("status") IngredientStatus status,
             @Param("from") OffsetDateTime from
     );
 
-    @Query("SELECT COALESCE(SUM(s.inventory.cost), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status")
+    @Query("SELECT COALESCE(SUM(s.amount), 0) FROM SavingsRecord s WHERE s.member.id = :memberId AND s.status = :status")
     long sumCostByMemberIdAndStatus(
             @Param("memberId") Long memberId,
             @Param("status") IngredientStatus status

@@ -40,6 +40,11 @@ public enum ErrorCode {
 
     INVENTORY_NOT_FOUND(404, 4001, "error.inventory.inventory_not_found"),
     INVENTORY_FORBIDDEN(403, 4002, "error.inventory.inventory_forbidden"),
+    INVENTORY_ALREADY_COMPLETED(409, 4003, "error.inventory.already_completed"),
+    INVALID_PROCESS_STATUS(400, 4004, "error.inventory.invalid_process_status"),
+    INVALID_PROCESS_RATIO(400, 4005, "error.inventory.invalid_process_ratio"),
+    PROCESS_RATIO_EXCEEDED(400, 4006, "error.inventory.process_ratio_exceeded"),
+    INVENTORY_COST_CHANGE_NOT_ALLOWED(409, 4007, "error.inventory.cost_change_not_allowed"),
     INVALID_INPUT_VALUE(400, 4002, "error.common.invalid_input_value"),
 
     WISH_NOT_FOUND(404, 4051, "error.wish.wish_not_found"),
