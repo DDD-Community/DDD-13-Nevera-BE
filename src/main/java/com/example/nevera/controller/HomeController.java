@@ -38,7 +38,7 @@ public class HomeController {
         return ApiResponse.success(savingsService.getHomeSummary(memberId));
     }
 
-    @Operation(summary = "소비 완료 목록 조회 (무한스크롤)", description = "offset, limit으로 페이징. 기본값: offset=0, limit=20")
+    @Operation(summary = "구조 목록 조회 (무한스크롤)", description = "offset, limit으로 페이징. 기본값: offset=0, limit=20")
     @GetMapping("/consumed")
     public ApiResponse<List<ConsumedWastedResponse>> getConsumed(
             @AuthenticationPrincipal Long memberId,

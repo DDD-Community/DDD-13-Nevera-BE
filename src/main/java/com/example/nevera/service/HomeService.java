@@ -71,7 +71,7 @@ public class HomeService {
         return savingsRecordRepository
                 .findByMemberIdAndStatus(memberId, IngredientStatus.CONSUMED, PageRequest.of(offset / limit, limit))
                 .stream()
-                .map(r -> ConsumedWastedResponse.from(r.getInventory()))
+                .map(ConsumedWastedResponse::from)
                 .toList();
     }
 
@@ -80,7 +80,7 @@ public class HomeService {
         return savingsRecordRepository
                 .findByMemberIdAndStatus(memberId, IngredientStatus.WASTED, PageRequest.of(offset / limit, limit))
                 .stream()
-                .map(r -> ConsumedWastedResponse.from(r.getInventory()))
+                .map(ConsumedWastedResponse::from)
                 .toList();
     }
 }
