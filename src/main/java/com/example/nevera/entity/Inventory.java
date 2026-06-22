@@ -65,6 +65,13 @@ public class Inventory {
     @Builder.Default
     private int cost = 0;
 
+    @Column(name = "original_cost", nullable = false)
+    @Builder.Default
+    private int originalCost = 0;
+
+    @Column(name = "completed_at")
+    private OffsetDateTime completedAt;
+
     @Column(name = "created_at", updatable = false, nullable = false)
     private OffsetDateTime createdAt;
 
@@ -73,6 +80,9 @@ public class Inventory {
 
     @PrePersist
     public void prePersist() {
+        if (this.originalCost == 0) {
+            this.originalCost = this.cost;
+        }
         this.createdAt = OffsetDateTime.now();
         this.updatedAt = OffsetDateTime.now();
     }
@@ -103,18 +113,26 @@ public class Inventory {
         this.location = requestDto.location();
         this.quantity = requestDto.quantity();
         this.expirationDate = requestDto.expirationDate();
-        this.cost = requestDto.cost();
-        this.status = requestDto.ingredientStatus();
     }
 
-    public void updateDetailsWithRemainingCost(InventoryUpdateRequest requestDto, int newCost) {
-        this.name = requestDto.name();
-        this.category = requestDto.category();
-        this.location = requestDto.location();
-        this.quantity = requestDto.quantity();
-        this.expirationDate = requestDto.expirationDate();
-        this.cost = newCost;
-        this.status = requestDto.ingredientStatus();
+    public void updateCostBeforeProcessing(int cost) {
+        this.cost = cost;
+        this.originalCost = cost;
+    }
+
+    public void decreaseCost(int processedAmount) {
+        this.cost = Math.max(0, this.cost - processedAmount);
+        this.status = IngredientStatus.ACTIVE;
+    }
+
+    public void complete(IngredientStatus finalStatus) {
+        this.cost = 0;
+        this.status = finalStatus;
+        this.completedAt = OffsetDateTime.now();
+    }
+
+    public boolean isCompleted() {
+        return this.completedAt != null;
     }
 
     // TODO: 냉동 보관으로 변경 시 유통기한, 소비기한 늘리는 setter 따로 작성할지 말지 고민

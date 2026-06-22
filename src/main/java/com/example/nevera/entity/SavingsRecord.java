@@ -35,6 +35,12 @@ public class SavingsRecord {
     @Column(nullable = false, columnDefinition = "text")
     private IngredientStatus status;
 
+    @Column(nullable = false)
+    private int ratio;
+
+    @Column(nullable = false)
+    private int amount;
+
     @Column(name = "recorded_at", nullable = false)
     private OffsetDateTime recordedAt;
 
