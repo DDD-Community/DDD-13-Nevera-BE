@@ -15,7 +15,7 @@ public record ConsumedWastedResponse(
     public static ConsumedWastedResponse from(SavingsRecord record) {
         Inventory inventory = record.getInventory();
         return new ConsumedWastedResponse(
-                inventory.getId(),
+                record.getId(),
                 inventory.getName(),
                 inventory.getCategory(),
                 inventory.getCategory().getDisplayName(),
